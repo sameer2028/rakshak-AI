@@ -1,6 +1,8 @@
 import { Activity, ShieldAlert, Cpu, Search, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function GraphControls({ onAnalyze, onSearch, isLoading }) {
+  const [searchQuery, setSearchQuery] = useState('');
   
   const handleAnalyze = (algorithm) => {
     onAnalyze(algorithm);
@@ -43,14 +45,17 @@ export default function GraphControls({ onAnalyze, onSearch, isLoading }) {
           <Search className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-gray-500" />
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search phone, UPI, or account..."
             className="w-full pl-9 pr-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-gray-300 focus:ring-1 focus:ring-purple-500 outline-none"
             onKeyDown={(e) => {
-              if (e.key === 'Enter') onSearch(e.target.value);
+              if (e.key === 'Enter') onSearch(searchQuery);
             }}
           />
         </div>
         <button 
+          onClick={() => onSearch(searchQuery)}
           className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-700 border border-gray-600 transition-all"
           disabled={isLoading}
         >

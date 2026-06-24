@@ -8,6 +8,7 @@ import ReactFlow, {
   MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import dagre from 'dagre';
 
 // Custom node styling based on type
 const getNodeStyle = (type, isFlagged) => {
@@ -39,6 +40,39 @@ const getNodeStyle = (type, isFlagged) => {
   }
 };
 
+const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 100 });
+
+  nodes.forEach((node) => {
+    // Estimating node width and height based on the style
+    dagreGraph.setNode(node.id, { width: 150, height: 50 });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = isHorizontal ? 'left' : 'top';
+    node.sourcePosition = isHorizontal ? 'right' : 'bottom';
+    
+    // Dagre returns the center, React Flow needs top left
+    node.position = {
+      x: nodeWithPosition.x - 75,
+      y: nodeWithPosition.y - 25,
+    };
+  });
+
+  return { nodes, edges };
+};
+
 export default function NetworkGraph({ data, onNodeClick }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -47,22 +81,17 @@ export default function NetworkGraph({ data, onNodeClick }) {
     if (!data) return;
 
     // Transform backend nodes to React Flow format
-    const rfNodes = data.nodes.map((node, i) => {
-      // Simple grid layout for demo (in a real app, use dagre or force layout)
-      const cols = Math.ceil(Math.sqrt(data.nodes.length));
-      const x = (i % cols) * 200;
-      const y = Math.floor(i / cols) * 150;
-
+    const initialNodes = data.nodes.map((node) => {
       return {
         id: node.node_id,
-        position: { x, y },
+        position: { x: 0, y: 0 },
         data: { label: node.label },
         style: getNodeStyle(node.node_type, node.is_flagged),
       };
     });
 
     // Transform backend edges
-    const rfEdges = data.edges.map((edge, i) => ({
+    const initialEdges = data.edges.map((edge, i) => ({
       id: `e-${edge.source}-${edge.target}-${i}`,
       source: edge.source,
       target: edge.target,
@@ -78,8 +107,14 @@ export default function NetworkGraph({ data, onNodeClick }) {
       },
     }));
 
-    setNodes(rfNodes);
-    setEdges(rfEdges);
+    // Apply Dagre layout
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      initialNodes,
+      initialEdges
+    );
+
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
   }, [data, setNodes, setEdges]);
 
   return (
