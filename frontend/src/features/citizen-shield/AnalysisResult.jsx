@@ -2,8 +2,9 @@ import RiskMeter from '../../components/common/RiskMeter';
 import VerdictBadge from '../../components/common/VerdictBadge';
 import { Activity, ShieldAlert, CheckCircle2, AlertTriangle, ChevronRight } from 'lucide-react';
 import { getRiskBgColor, cn } from '../../lib/utils';
+import { TRANSLATIONS } from '../../constants/translations';
 
-export default function AnalysisResult({ result }) {
+export default function AnalysisResult({ result, language = 'en' }) {
   if (!result) return null;
 
   const { verdict, risk_score, confidence, reasons, matched_patterns, response_time_ms } = result;
@@ -36,7 +37,9 @@ export default function AnalysisResult({ result }) {
           
           <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
             <span className="text-gray-400 text-sm">Verdict:</span>
-            <VerdictBadge verdict={verdict} className="text-sm px-3 py-1.5" />
+            <span className={cn("px-4 py-1.5 rounded-full text-sm font-semibold border", theme.bg, theme.border, theme.text)}>
+              {TRANSLATIONS[language]?.verdict[verdict] || verdict}
+            </span>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-4 text-xs font-mono text-gray-400 justify-center md:justify-start">

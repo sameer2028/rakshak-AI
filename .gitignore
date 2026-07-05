@@ -43,3 +43,11 @@ MANIFEST
 .Trashes
 ehthumbs.db
 Thumbs.db
+backend/uploads/
+
+# Temporary test files and wrappers
+test_cors.py
+test_request.py
+main.py
+app/
+backend/test_model.py

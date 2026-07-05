@@ -10,6 +10,7 @@ import time
 from typing import Optional, List
 
 from app.models.complaint import Complaint, ScamType, VerdictType
+from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.user import User
 from app.schemas.scam_detection import (
     ScamAnalyzeRequest,
@@ -53,6 +54,17 @@ class ScamDetectionService:
             status="analyzed",
         )
         await complaint.insert()
+
+        if result["is_scam"]:
+            alert = Alert(
+                alert_type=AlertType.SCAM_DETECTED,
+                severity=AlertSeverity.CRITICAL if result["risk_score"] > 85 else AlertSeverity.HIGH,
+                title=f"Digital Arrest Scam Detected via Transcript",
+                description=f"Risk Score: {result['risk_score']}. {result['threat_indicators'][0]['indicator'] if result['threat_indicators'] else 'Impersonation scam detected.'}",
+                source_module="scam_detection",
+                reference_id=str(complaint.id),
+            )
+            await alert.insert()
 
         return ScamAnalyzeResponse(
             detection_id=str(complaint.id),

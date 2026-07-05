@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import FraudCheckForm from './FraudCheckForm';
 import AnalysisResult from './AnalysisResult';
 import { citizenShieldApi } from '../../api/citizen-shield.api';
-import { ShieldAlert, History, Shield, Loader2 } from 'lucide-react';
+import { ShieldAlert, History, Shield, Loader2, Globe } from 'lucide-react';
 import VerdictBadge from '../../components/common/VerdictBadge';
+import { TRANSLATIONS } from '../../constants/translations';
 
 export default function CitizenShieldPage() {
   const [activeTab, setActiveTab] = useState('check'); // 'check' or 'history'
@@ -12,6 +13,7 @@ export default function CitizenShieldPage() {
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [language, setLanguage] = useState('en');
 
   const handleFraudCheck = async (data) => {
     setIsLoading(true);
@@ -54,14 +56,30 @@ export default function CitizenShieldPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <Shield className="w-8 h-8 text-blue-500" />
-          Citizen Fraud Shield
-        </h1>
-        <p className="text-gray-400 mt-2">
-          Verify suspicious messages, phone numbers, or UPI IDs instantly using AI.
-        </p>
+      {/* Header with Language Selector */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <Shield className="w-8 h-8 text-blue-500" />
+            Citizen Fraud Shield
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Verify suspicious messages, phone numbers, or UPI IDs instantly using AI.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2 bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-1.5">
+          <Globe className="w-4 h-4 text-gray-400" />
+          <select 
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="bg-transparent text-sm text-gray-300 focus:outline-none cursor-pointer"
+          >
+            {Object.entries(TRANSLATIONS).map(([code, data]) => (
+              <option key={code} value={code} className="bg-gray-900">{data.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -111,7 +129,7 @@ export default function CitizenShieldPage() {
               )}
               
               {result ? (
-                <AnalysisResult result={result} />
+                <AnalysisResult result={result} language={language} />
               ) : (
                 <div className="h-full min-h-[300px] border border-dashed border-gray-700/50 rounded-2xl flex flex-col items-center justify-center text-gray-500 p-8">
                   <ShieldAlert className="w-12 h-12 mb-4 opacity-20" />

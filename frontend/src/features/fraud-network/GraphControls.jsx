@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export default function GraphControls({ onAnalyze, onSearch, isLoading }) {
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const handleAnalyze = (algorithm) => {
     onAnalyze(algorithm);
   };
@@ -54,7 +54,7 @@ export default function GraphControls({ onAnalyze, onSearch, isLoading }) {
             }}
           />
         </div>
-        <button 
+        <button
           onClick={() => onSearch(searchQuery)}
           className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-700 border border-gray-600 transition-all"
           disabled={isLoading}

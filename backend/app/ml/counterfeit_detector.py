@@ -49,6 +49,12 @@ class CounterfeitDetector:
             thread_status = self.check_security_thread(gray)
             micro_text_status = self.check_micro_text(gray)
             
+            # Seed the random generators using the image pixel sum to make the result deterministic
+            img_sum = int(np.sum(gray))
+            torch.manual_seed(img_sum)
+            np.random.seed(img_sum)
+            random.seed(img_sum)
+            
             # Simulate PyTorch embedding extraction
             dummy_tensor = torch.rand(1, 2048).to(self.device)
             out = self.model(dummy_tensor)
