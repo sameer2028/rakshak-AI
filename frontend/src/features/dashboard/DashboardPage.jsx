@@ -10,12 +10,7 @@ import { dashboardApi } from '../../api/dashboard.api';
 
 export default function DashboardPage() {
   const [data, setData] = useState({
-    overview: {
-      total_scams_blocked: 45231,
-      active_fraud_rings: 124,
-      critical_hotspots: 18,
-      counterfeit_detected: 842,
-    },
+    overview: null,
     alerts: [],
     highRisk: [],
   });
@@ -51,6 +46,14 @@ export default function DashboardPage() {
       alerts: prev.alerts.map(a => a.alert_id === id ? { ...a, is_resolved: true } : a)
     }));
   };
+
+  if (!data.overview) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">

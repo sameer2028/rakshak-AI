@@ -38,3 +38,5 @@ Pillow==11.1.0
 httpx==0.28.1
 loguru==0.7.3
 email-validator>=2.1.0
+
+SpeechRecognition==3.17.0

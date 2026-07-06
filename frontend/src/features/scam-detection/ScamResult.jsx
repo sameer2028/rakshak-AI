@@ -95,6 +95,16 @@ export default function ScamResult({ result }) {
               ))}
             </ul>
           </div>
+
+          {/* AI Suggested Response */}
+          <div className="bg-blue-900/20 border border-blue-500/30 p-5 rounded-xl flex flex-col">
+            <h4 className="text-gray-400 text-sm uppercase tracking-wider mb-4">AI Suggested Response</h4>
+            <div className="bg-blue-900/40 p-4 rounded-lg text-blue-100 flex-1 flex items-center justify-center text-center text-lg italic">
+              {risk_score > 70 
+                ? `"I will contact my bank or the local authorities directly. I will not share any information over the phone."` 
+                : `"Thank you for the information, I will verify this and get back to you."`}
+            </div>
+          </div>
         </>
       )}
     </div>
