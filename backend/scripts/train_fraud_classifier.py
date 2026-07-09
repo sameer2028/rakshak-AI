@@ -23,7 +23,7 @@ def generate_synthetic_data(n_samples=5000):
     data = []
     
     scam_keywords = ["urgent", "kyc", "block", "suspended", "prize", "lottery", "customs", "cbi", "arrest", "fine", "penalty"]
-    safe_keywords = ["meeting", "dinner", "lunch", "hi", "hello", "project", "report", "call me", "tomorrow"]
+    safe_keywords = ["meeting", "dinner", "lunch", "hi", "hello", "project", "report", "call me", "tomorrow", "rs", "inr", "debited", "credited", "otp", "order", "shipped", "delivered", "flipkart", "swiggy", "zomato", "amazon", "login", "valid", "balance", "amount"]
     
     for _ in range(n_samples):
         # 0: SAFE, 1: SUSPICIOUS, 2: SCAM

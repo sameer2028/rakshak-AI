@@ -7,6 +7,7 @@ Orchestrates ML models to analyze messages, phone numbers, UPIs, and emails.
 
 from datetime import datetime, timezone
 import time
+import re
 from typing import Optional
 
 from app.models.complaint import Complaint, VerdictType
@@ -145,9 +146,9 @@ class CitizenShieldService:
 
         if request.message:
             msg_lower = request.message.lower()
-            scam_keywords = ["digital arrest", "cbi", "ed ", "customs", "warrant", "transfer money", "lakh", "urgent", "freeze"]
+            scam_keywords = ["digital arrest", "cbi", "ed", "customs", "warrant", "transfer money", "lakh", "urgent", "freeze"]
             for keyword in scam_keywords:
-                if keyword in msg_lower:
+                if re.search(rf"\b{keyword}\b", msg_lower):
                     patterns.append(keyword)
                     reasons.append(f"Contains suspicious keyword: '{keyword}'")
 
