@@ -85,12 +85,30 @@ class ScamNLPEngine:
 
     def extract_entities(self, text: str) -> dict:
         """Extract entities (phone, UPI, account) from text."""
-        # This can be improved with regex or NER. Keeping basic stub.
+        import re
+        
+        # Phone numbers: +91 followed by 10 digits, or 10 digits starting with 6-9
+        phone_pattern = r'(?:\+91[\-\s]?)?[6789]\d{9}'
+        phones = list(set(re.findall(phone_pattern, text)))
+        
+        # UPI IDs: string followed by @ and a bank handle
+        upi_pattern = r'[a-zA-Z0-9.\-_]{2,64}@[a-zA-Z]{2,64}'
+        upis = list(set(re.findall(upi_pattern, text)))
+        
+        # Amounts: ₹10,000, Rs 5 lakh, etc.
+        amount_pattern = r'(?:₹|Rs\.?|INR)\s*[\d,]+(?:\.\d+)?\s*(?:lakh|crore|k|L)?'
+        amounts = list(set(re.findall(amount_pattern, text, re.IGNORECASE)))
+        
+        # Bank accounts: 9 to 18 digits
+        account_pattern = r'\b\d{9,18}\b'
+        accounts_raw = re.findall(account_pattern, text)
+        accounts = list(set([a for a in accounts_raw if a not in phones and not (len(a) == 10 and a.startswith(('6','7','8','9')))]))
+        
         return {
-            "phone_numbers": [],
-            "upi_ids": [],
-            "bank_accounts": [],
-            "amounts": [],
+            "phone_numbers": phones,
+            "upi_ids": upis,
+            "bank_accounts": accounts,
+            "amounts": amounts,
         }
 
 # Global instance

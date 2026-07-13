@@ -5,8 +5,7 @@ Business logic for Police Command Center dashboard.
 Aggregates data from all modules into dashboard panels.
 """
 
-from datetime import datetime, timezone
-
+from datetime import datetime, timedelta, timezone
 from app.models.complaint import Complaint, VerdictType
 from app.models.fraud_node import FraudNode
 from app.models.currency_check import CurrencyCheck, CurrencyVerdict
@@ -55,6 +54,27 @@ class DashboardService:
         scam_complaints = await Complaint.find(Complaint.verdict == VerdictType.SCAM).to_list()
         total_saved = sum(c.amount_lost or 0 for c in scam_complaints)
 
+        # Calculate 7-day trend data
+        today = datetime.now(timezone.utc)
+        seven_days_ago = today - timedelta(days=6) # 7 days including today
+        
+        recent_complaints = await Complaint.find(Complaint.created_at >= seven_days_ago).to_list()
+        
+        # Initialize dictionary for last 7 days (e.g. 'Mon', 'Tue')
+        daily_trends = {}
+        for i in range(7):
+            d = (today - timedelta(days=6-i)).strftime('%a')
+            daily_trends[d] = {"scams": 0, "blocked": 0}
+            
+        for c in recent_complaints:
+            day_str = c.created_at.strftime('%a')
+            if day_str in daily_trends:
+                daily_trends[day_str]["scams"] += 1
+                if c.verdict in [VerdictType.SCAM, VerdictType.SUSPICIOUS]:
+                    daily_trends[day_str]["blocked"] += 1
+                    
+        scams_last_7_days = [{"name": k, "scams": v["scams"], "blocked": v["blocked"]} for k, v in daily_trends.items()]
+
         return DashboardOverview(
             total_scams_detected=total_scams,
             total_scams_blocked=total_scams + total_suspicious,
@@ -63,7 +83,7 @@ class DashboardService:
             counterfeit_notes_detected=counterfeit_count,
             total_amount_saved=total_saved,
             trends={
-                "scams_last_7_days": [],  # TODO: Compute daily aggregation
+                "scams_last_7_days": scams_last_7_days,
                 "fraud_rings_last_7_days": [],
                 "complaints_last_7_days": [],
             },

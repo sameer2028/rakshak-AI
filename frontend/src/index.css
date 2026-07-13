@@ -1,9 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* ─── Google Fonts ────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* ─── CSS Custom Properties (Design Tokens) ──────────────── */
 :root {
@@ -164,6 +164,16 @@ body {
 .animate-slide-right { animation: slideInRight 0.4s ease forwards; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 .animate-spin-slow { animation: spin-slow 3s linear infinite; }
+
+.scanner-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-cyan);
+  box-shadow: 0 0 10px var(--color-cyan), 0 0 20px var(--color-cyan);
+  animation: scan-line 2.5s ease-in-out infinite;
+}
 
 /* ─── Staggered Animations ───────────────────────────────── */
 .stagger-1 { animation-delay: 0.1s; }

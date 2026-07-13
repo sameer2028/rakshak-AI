@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # ML Models
     ML_MODELS_DIR: str = "app/ml/models"
 
+    # CC Counterfeit Detection Pipeline — model paths
+    # If weights are absent, the pipeline falls back to CV heuristics automatically.
+    YOLO_MODEL_PATH: str = "app/cc/models/yolo11_currency.pt"
+    CLASSIFIER_MODEL_PATH: str = "app/cc/models/efficientnet_real_fake.pt"
+
     # CORS
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
@@ -40,7 +45,7 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()

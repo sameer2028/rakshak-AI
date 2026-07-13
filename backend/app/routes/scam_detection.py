@@ -6,7 +6,8 @@ GET   /api/scam/detections        - List all detections
 PATCH /api/scam/detections/{id}   - Update detection status
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, File, UploadFile
+from typing import Optional
 
 from app.schemas.scam_detection import (
     ScamAnalyzeRequest,
@@ -18,6 +19,7 @@ from app.schemas.auth import MessageResponse
 from app.middleware.dependencies import get_current_user, require_roles
 from app.models.user import User
 from app.services.scam_detection_service import ScamDetectionService
+from app.services.audio_service import extract_text_from_audio
 
 router = APIRouter(prefix="/scam", tags=["Digital Arrest Scam Detection"])
 
@@ -27,9 +29,36 @@ async def analyze_scam(
     request: ScamAnalyzeRequest,
     current_user: User = Depends(require_roles(["police", "admin", "citizen"])),
 ):
-    """Analyze a call transcript or message for digital arrest scam patterns."""
     service = ScamDetectionService()
     return await service.analyze(request, current_user)
+
+@router.post("/analyze-live", response_model=ScamAnalyzeResponse)
+async def analyze_scam_live(
+    request: ScamAnalyzeRequest,
+    current_user: User = Depends(require_roles(["police", "admin", "citizen"])),
+):
+    """Analyze a call transcript in real-time (no DB insertion)."""
+    service = ScamDetectionService()
+    return await service.analyze_live(request)
+
+@router.post("/analyze-audio", response_model=ScamAnalyzeResponse)
+async def analyze_scam_audio(
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_roles(["police", "admin", "citizen"])),
+):
+    """Extract text from audio and analyze for scam patterns."""
+    transcript = await extract_text_from_audio(file)
+    
+    # Create request object
+    from app.schemas.scam_detection import ScamAnalyzeRequest, PhoneMetadata
+    request = ScamAnalyzeRequest(
+        transcript=transcript,
+        phone_metadata=None
+    )
+    
+    service = ScamDetectionService()
+    return await service.analyze(request, current_user)
+
 
 
 @router.get("/detections", response_model=ScamDetectionListResponse)

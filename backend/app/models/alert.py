@@ -63,7 +63,7 @@ class Alert(Document):
     district: Optional[str] = Field(default=None)
 
     # Timestamps
-    created_at: Indexed(datetime, default_factory=lambda: datetime.now(timezone.utc))  # type: ignore[valid-type]
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:

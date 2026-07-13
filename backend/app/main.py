@@ -80,6 +80,19 @@ app.add_middleware(
 
 app.add_middleware(RequestLoggingMiddleware)
 
+import traceback
+from fastapi.responses import JSONResponse
+from fastapi import Request
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import sys
+    print("GLOBAL EXCEPTION:", exc, file=sys.stderr)
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "type": type(exc).__name__},
+    )
+
 
 # ─── Mount Routers ───────────────────────────────────────────────
 

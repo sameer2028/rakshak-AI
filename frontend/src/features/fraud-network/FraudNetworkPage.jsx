@@ -4,8 +4,10 @@ import NetworkGraph from './NetworkGraph';
 import GraphControls from './GraphControls';
 import NodeDetail from './NodeDetail';
 import { fraudNetworkApi } from '../../api/fraud-network.api';
+import { useToastStore } from '../../store/toastStore';
 
 export default function FraudNetworkPage() {
+  const addToast = useToastStore((state) => state.addToast);
   const [graphData, setGraphData] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,10 +43,10 @@ export default function FraudNetworkPage() {
     setIsLoading(true);
     try {
       const response = await fraudNetworkApi.analyze({ algorithm });
-      alert(`Analysis complete: ${response.data.message}`);
+      addToast(`Analysis complete: ${response.data.message}`, 'success');
       loadGraph(); // reload graph with updated metrics
     } catch (err) {
-      alert('Analysis failed');
+      addToast('Analysis failed', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +59,7 @@ export default function FraudNetworkPage() {
       const response = await fraudNetworkApi.search({ query });
       setGraphData(response.data);
     } catch (err) {
-      alert('Search failed');
+      addToast('Search failed', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +87,12 @@ export default function FraudNetworkPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1">
         <div className="lg:col-span-1 space-y-4">
-          <GraphControls 
-            onAnalyze={handleAnalyze} 
-            onSearch={handleSearch} 
-            isLoading={isLoading} 
+          <GraphControls
+            onAnalyze={handleAnalyze}
+            onSearch={handleSearch}
+            isLoading={isLoading}
           />
-          
+
           <div className="glass-card p-4 border border-gray-700/50">
             <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Legend</h4>
             <div className="space-y-2 text-sm text-gray-300">
@@ -111,7 +113,7 @@ export default function FraudNetworkPage() {
               Loading graph data...
             </div>
           )}
-          
+
           {selectedNode && (
             <NodeDetail node={selectedNode} onClose={() => setSelectedNode(null)} />
           )}

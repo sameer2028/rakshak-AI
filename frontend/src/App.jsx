@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import { ROUTES } from './constants/routes';
+import ToastContainer from './components/common/ToastContainer';
 
 // We'll import pages as they are built
 import LoginPage from './features/auth/LoginPage';
@@ -23,6 +24,7 @@ const Placeholder = ({ title }) => (
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         {/* Public Routes */}
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />

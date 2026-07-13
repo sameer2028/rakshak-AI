@@ -55,7 +55,7 @@ class CounterfeitService:
             f.write(content)
 
         # Use ML Computer Vision model
-        result = counterfeit_detector.detect(filepath)
+        result = counterfeit_detector.detect(filepath, original_filename=image.filename)
         
         # Convert string verdict back to enum
         verdict_enum = CurrencyVerdict(result["verdict"])
@@ -82,6 +82,8 @@ class CounterfeitService:
         return CounterfeitDetectResponse(
             record_id=str(record.id),
             prediction=verdict_enum.value,
+            verdict_summary=result.get("verdict_summary", ""),
+            reasons=result.get("reasons", []),
             confidence=result["confidence"],
             denomination=denomination,
             serial_number=result.get("serial_number"),

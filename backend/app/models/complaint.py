@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 class ComplaintStatus(str, Enum):
     REPORTED = "reported"
     ANALYZING = "analyzing"
+    ANALYZED = "analyzed"
     INVESTIGATED = "investigated"
     RESOLVED = "resolved"
     CLOSED = "closed"

@@ -10,6 +10,7 @@ import time
 from typing import Optional, List
 
 from app.models.complaint import Complaint, ScamType, VerdictType
+from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.user import User
 from app.schemas.scam_detection import (
     ScamAnalyzeRequest,
@@ -54,6 +55,17 @@ class ScamDetectionService:
         )
         await complaint.insert()
 
+        if result["is_scam"]:
+            alert = Alert(
+                alert_type=AlertType.SCAM_DETECTED,
+                severity=AlertSeverity.CRITICAL if result["risk_score"] > 85 else AlertSeverity.HIGH,
+                title=f"Digital Arrest Scam Detected via Transcript",
+                description=f"Risk Score: {result['risk_score']}. {result['threat_indicators'][0]['indicator'] if result['threat_indicators'] else 'Impersonation scam detected.'}",
+                source_module="scam_detection",
+                reference_id=str(complaint.id),
+            )
+            await alert.insert()
+
         return ScamAnalyzeResponse(
             detection_id=str(complaint.id),
             is_scam=result["is_scam"],
@@ -63,6 +75,24 @@ class ScamDetectionService:
             threat_indicators=[ThreatIndicator(**ti) for ti in result["threat_indicators"]],
             recommended_actions=result["recommended_actions"],
             analyzed_at=complaint.created_at,
+        )
+
+    async def analyze_live(self, request: ScamAnalyzeRequest) -> ScamAnalyzeResponse:
+        """Analyze a call transcript in real-time without persisting to DB."""
+        start_time = time.time()
+
+        # ML NLP scam classifier
+        result = self._ml_scam_analysis(request)
+
+        return ScamAnalyzeResponse(
+            detection_id="live-analysis-simulated",
+            is_scam=result["is_scam"],
+            scam_type=result["scam_type"],
+            risk_score=result["risk_score"],
+            confidence=result["confidence"],
+            threat_indicators=[ThreatIndicator(**ti) for ti in result["threat_indicators"]],
+            recommended_actions=result["recommended_actions"],
+            analyzed_at=datetime.now(timezone.utc),
         )
 
     async def list_detections(
@@ -135,6 +165,9 @@ class ScamDetectionService:
             "ed ": "Fake ED Impersonation",
             "customs": "Fake Customs Impersonation",
             "police": "Government Impersonation",
+            "sbi": "Bank Impersonation",
+            "paytm": "Wallet Impersonation",
+            "bank": "Bank Impersonation",
         }
 
         for keyword, label in impersonation_patterns.items():
@@ -147,7 +180,7 @@ class ScamDetectionService:
                 })
 
         # Fear language
-        fear_words = ["arrest", "warrant", "jail", "prison", "case filed", "FIR", "digital arrest"]
+        fear_words = ["arrest", "warrant", "jail", "prison", "case filed", "fir", "digital arrest", "blocked", "deactivated", "illegal", "narcotics", "penalty"]
         for word in fear_words:
             if word.lower() in transcript_lower:
                 threat_indicators.append({
@@ -157,8 +190,8 @@ class ScamDetectionService:
                     "evidence": f"Transcript contains fear-inducing term: '{word}'",
                 })
 
-        # Money demand
-        money_words = ["transfer", "pay", "lakh", "crore", "send money", "NEFT", "RTGS", "UPI"]
+        # Money and sensitive info demand
+        money_words = ["transfer", "pay", "lakh", "crore", "send money", "neft", "rtgs", "upi", "otp", "share", "cvv", "pin", "deposit"]
         for word in money_words:
             if word.lower() in transcript_lower:
                 threat_indicators.append({

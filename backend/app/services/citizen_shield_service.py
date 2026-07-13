@@ -10,6 +10,7 @@ import time
 from typing import Optional
 
 from app.models.complaint import Complaint, VerdictType
+from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.user import User
 from app.schemas.citizen_shield import (
     FraudCheckRequest,
@@ -62,6 +63,17 @@ class CitizenShieldService:
             response_time_ms=response_time_ms,
         )
         await complaint.insert()
+
+        if verdict == VerdictType.SCAM:
+            alert = Alert(
+                alert_type=AlertType.SCAM_DETECTED,
+                severity=AlertSeverity.HIGH if risk_score > 85 else AlertSeverity.MEDIUM,
+                title=f"Citizen Shield: Scam Detected ({request.source})",
+                description=f"Risk Score: {risk_score}. {reasons[0] if reasons else 'Suspicious activity reported.'}",
+                source_module="citizen_shield",
+                reference_id=str(complaint.id),
+            )
+            await alert.insert()
 
         return FraudCheckResponse(
             report_id=str(complaint.id),

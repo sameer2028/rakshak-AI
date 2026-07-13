@@ -34,7 +34,7 @@ class CurrencyCheck(Document):
 
     # Image Data
     image_path: str = Field(..., description="Path to uploaded currency image")
-    denomination: Optional[int] = Field(default=None, description="100, 200, 500, 2000")
+    denomination: Optional[int] = Field(default=None, description="10, 20, 50, 100, 200, 500")
 
     # AI Detection Result
     prediction: CurrencyVerdict = Field(...)

@@ -7,25 +7,10 @@ import { Shield, ShieldAlert, PhoneOff, AlertTriangle, Network, MapPin } from 'l
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { dashboardApi } from '../../api/dashboard.api';
 
-// Dummy data for the chart
-const chartData = [
-  { name: 'Mon', scams: 4000, blocked: 2400 },
-  { name: 'Tue', scams: 3000, blocked: 1398 },
-  { name: 'Wed', scams: 2000, blocked: 9800 },
-  { name: 'Thu', scams: 2780, blocked: 3908 },
-  { name: 'Fri', scams: 1890, blocked: 4800 },
-  { name: 'Sat', scams: 2390, blocked: 3800 },
-  { name: 'Sun', scams: 3490, blocked: 4300 },
-];
 
 export default function DashboardPage() {
   const [data, setData] = useState({
-    overview: {
-      total_scams_blocked: 45231,
-      active_fraud_rings: 124,
-      critical_hotspots: 18,
-      counterfeit_detected: 842,
-    },
+    overview: null,
     alerts: [],
     highRisk: [],
   });
@@ -61,6 +46,14 @@ export default function DashboardPage() {
       alerts: prev.alerts.map(a => a.alert_id === id ? { ...a, is_resolved: true } : a)
     }));
   };
+
+  if (!data.overview) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -118,7 +111,7 @@ export default function DashboardPage() {
             </h3>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={data.overview.trends?.scams_last_7_days || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorScams" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
