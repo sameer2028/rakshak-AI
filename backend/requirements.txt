@@ -26,6 +26,7 @@ pandas==2.2.3
 # ML - NLP
 transformers==4.47.1
 torch==2.5.1
+torchvision>=0.17.1
 
 # ML - Graph
 networkx==3.4.2
@@ -40,3 +41,18 @@ loguru==0.7.3
 email-validator>=2.1.0
 
 SpeechRecognition==3.17.0
+
+# ── CC Counterfeit Currency Detection Pipeline (added) ─────────────────────
+# YOLOv11 security feature detection (falls back to CV engine if model not present)
+ultralytics>=8.1.24
+# EasyOCR serial number + text extraction (falls back to simulation if unavailable)
+easyocr>=1.7.1
+# Grad-CAM heatmap rendering
+matplotlib>=3.8.3
+# Image augmentation (used by ultralytics internally)
+albumentations>=1.4.0
+# ONNX runtime (used by ultralytics/easyocr for optimized inference)
+onnxruntime>=1.17.1
+# PostgreSQL support (optional — CC pipeline falls back gracefully if DB offline)
+sqlalchemy>=2.0.28
+psycopg2-binary>=2.9.9

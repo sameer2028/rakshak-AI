@@ -52,12 +52,22 @@ class AuthService:
 
     async def login(self, request: LoginRequest) -> TokenResponse:
         """Authenticate user and return JWT token."""
+        print(f"[DEBUG AUTH] Login attempt for: {request.email}")
         user = await User.find_one(User.email == request.email)
 
-        if not user or not verify_password(request.password, user.password):
+        if not user:
+            print(f"[DEBUG AUTH] User not found in MongoDB: {request.email}")
+            raise UnauthorizedException("Invalid email or password")
+
+        pw_verified = verify_password(request.password, user.password)
+        print(f"[DEBUG AUTH] Stored hash: {user.password}")
+        print(f"[DEBUG AUTH] Password matches hash: {pw_verified}")
+
+        if not pw_verified:
             raise UnauthorizedException("Invalid email or password")
 
         if not user.is_active:
+            print(f"[DEBUG AUTH] User is inactive: {request.email}")
             raise UnauthorizedException("Account is deactivated")
 
         # Generate JWT token

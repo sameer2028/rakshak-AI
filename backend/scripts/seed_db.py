@@ -434,7 +434,7 @@ async def seed_alerts():
         {"type": AlertType.MONEY_MULE, "severity": AlertSeverity.HIGH, "title": "Money mule network — 3 accounts", "desc": "Three SBI accounts operated from same device transferring funds within minutes of receiving them.", "module": "fraud_network", "state": "Uttar Pradesh", "district": "Noida"},
         {"type": AlertType.CROSS_STATE, "severity": AlertSeverity.HIGH, "title": "Cross-state scam — same phone across 5 states", "desc": "Phone +918001234567 used in digital arrest scams reported from Maharashtra, Delhi, Karnataka, Gujarat, Tamil Nadu.", "module": "scam_detection", "state": "Maharashtra", "district": "Mumbai"},
         {"type": AlertType.SCAM_DETECTED, "severity": AlertSeverity.HIGH, "title": "Loan fraud app — 200+ victims", "desc": "Fraudulent instant loan app 'QuickCash' collecting ₹4,500 processing fee and disappearing.", "module": "citizen_shield", "state": "Gujarat", "district": "Ahmedabad"},
-        {"type": AlertType.COUNTERFEIT, "severity": AlertSeverity.HIGH, "title": "₹2000 counterfeit — missing security thread", "desc": "Counterfeit ₹2000 note detected at SBI Jaipur branch. Security thread and watermark both failed verification.", "module": "counterfeit", "state": "Rajasthan", "district": "Jaipur"},
+        {"type": AlertType.COUNTERFEIT, "severity": AlertSeverity.HIGH, "title": "₹500 counterfeit — missing security thread", "desc": "Counterfeit ₹500 note detected at SBI Jaipur branch. Security thread and watermark both failed verification.", "module": "counterfeit", "state": "Rajasthan", "district": "Jaipur"},
         # Medium
         {"type": AlertType.SCAM_DETECTED, "severity": AlertSeverity.MEDIUM, "title": "WhatsApp phishing — SBI KYC", "desc": "Multiple citizens reported WhatsApp messages with fake SBI KYC update link.", "module": "citizen_shield", "state": "Kerala", "district": "Kochi"},
         {"type": AlertType.SCAM_DETECTED, "severity": AlertSeverity.MEDIUM, "title": "UPI refund scam attempt", "desc": "Scammer sent collect request claiming accidental transfer. Victim did not comply.", "module": "citizen_shield", "state": "Haryana", "district": "Gurugram"},
@@ -503,7 +503,7 @@ async def seed_currency_checks():
 
     for i in range(25):
         is_genuine = random.random() > 0.45
-        denomination = random.choice([100, 200, 500, 2000])
+        denomination = random.choice([10, 20, 50, 100, 200, 500])
         city = random.choice(INDIAN_CITIES)
 
         if is_genuine:
