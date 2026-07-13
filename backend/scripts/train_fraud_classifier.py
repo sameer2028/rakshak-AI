@@ -22,8 +22,8 @@ logger.info("Generating synthetic training data...")
 def generate_synthetic_data(n_samples=5000):
     data = []
     
-    scam_keywords = ["urgent", "kyc", "block", "suspended", "prize", "lottery", "customs", "cbi", "arrest", "fine", "penalty"]
-    safe_keywords = ["meeting", "dinner", "lunch", "hi", "hello", "project", "report", "call me", "tomorrow"]
+    scam_keywords = ["urgent", "kyc", "block", "suspended", "prize", "lottery", "customs", "cbi", "arrest", "fine", "penalty", "share", "password", "cvv", "pin"]
+    safe_keywords = ["meeting", "dinner", "lunch", "hi", "hello", "project", "report", "call me", "tomorrow", "rs", "inr", "debited", "credited", "otp", "order", "shipped", "delivered", "flipkart", "swiggy", "zomato", "amazon", "login", "valid", "balance", "amount", "pin", "update", "security"]
     
     for _ in range(n_samples):
         # 0: SAFE, 1: SUSPICIOUS, 2: SCAM
@@ -43,8 +43,8 @@ def generate_synthetic_data(n_samples=5000):
             if is_voip:
                 phone_prefix = random.choice([140, 144, 800])
         elif label == 1: # SUSPICIOUS
-            msg_words.extend(random.choices(scam_keywords, k=random.randint(0, 2)))
-            msg_words.extend(random.choices(safe_keywords, k=random.randint(2, 4)))
+            msg_words.extend(random.choices(scam_keywords, k=random.randint(1, 3)))
+            msg_words.extend(random.choices(safe_keywords, k=random.randint(1, 3)))
             is_voip = random.choices([0, 1], weights=[0.7, 0.3])[0]
         else: # SAFE
             msg_words.extend(random.choices(safe_keywords, k=random.randint(3, 8)))
@@ -52,10 +52,30 @@ def generate_synthetic_data(n_samples=5000):
             phone_prefix = random.randint(600, 999)
             
         # Add random words
-        msg_words.extend(["the", "and", "your", "account", "is", "for"] * random.randint(1, 3))
+        msg_words.extend(["the", "and", "your", "account", "is", "for", "please", "with", "me"] * random.randint(1, 3))
         random.shuffle(msg_words)
         message = " ".join(msg_words)
         
+        # Inject realistic context phrases to teach the model context
+        if label == 0:
+            safe_phrases = [
+                "please update your atm pin regularly for security",
+                "bank will never ask for your pin or otp",
+                "your appointment is confirmed",
+                "order has been shipped and will be delivered"
+            ]
+            if random.random() < 0.4:
+                message += " " + random.choice(safe_phrases)
+        elif label == 2 or label == 1:
+            scam_phrases = [
+                "share your pin to unblock",
+                "keep your pin updated with me",
+                "digital arrest warrant issued",
+                "pay customs penalty immediately"
+            ]
+            if random.random() < 0.4:
+                message += " " + random.choice(scam_phrases)
+                
         # custom feature extraction mimics what will happen in inference
         message_length = len(message)
         urgency_count = sum(1 for w in ["urgent", "immediate", "suspended", "block", "arrest"] if w in message.lower())
@@ -89,7 +109,7 @@ numeric_features = ["phone_prefix", "is_voip", "upi_domain", "message_length", "
 
 preprocessor = ColumnTransformer(
     transformers=[
-        ("text", TfidfVectorizer(max_features=500, stop_words="english"), text_features),
+        ("text", TfidfVectorizer(max_features=1000, stop_words="english", ngram_range=(1, 2)), text_features),
         ("num", StandardScaler(), numeric_features),
     ]
 )

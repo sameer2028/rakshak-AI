@@ -41,6 +41,7 @@ class FraudClassifier:
         
         # Phone features
         phone = features.get("phone_number") or ""
+        phone = phone.replace(" ", "").replace("-", "")
         phone_prefix = 0
         is_voip = 0
         if phone.startswith("+91"):
@@ -50,6 +51,11 @@ class FraudClassifier:
                 phone_prefix = int(phone[:3].strip())
             except ValueError:
                 phone_prefix = 0
+                
+        # If no phone number is provided, default to a safe prefix (600-999) 
+        # so the model relies on text features instead of anomalyizing a 0.
+        if phone_prefix == 0:
+            phone_prefix = 999
         
         if phone_prefix in [140, 144, 800]:
             is_voip = 1
@@ -134,3 +140,5 @@ class FraudClassifier:
 
 # Global instance
 fraud_classifier = FraudClassifier()
+
+# Trigger final balanced reload
