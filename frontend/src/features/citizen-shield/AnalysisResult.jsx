@@ -8,7 +8,7 @@ export default function AnalysisResult({ result, language = 'en' }) {
   if (!result) return null;
 
   const { verdict, risk_score, confidence, reasons, matched_patterns, response_time_ms } = result;
-  
+
   // Determine color theme based on verdict
   const theme = {
     SCAM: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-400', icon: ShieldAlert },
@@ -28,13 +28,13 @@ export default function AnalysisResult({ result, language = 'en' }) {
         <div className="flex-shrink-0 relative z-10">
           <RiskMeter score={risk_score} size={140} strokeWidth={12} />
         </div>
-        
+
         <div className="flex-1 text-center md:text-left relative z-10">
           <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
             <HeaderIcon className={cn("w-6 h-6", theme.text)} />
             <h3 className="text-xl font-bold text-white tracking-wide">Analysis Complete</h3>
           </div>
-          
+
           <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
             <span className="text-gray-400 text-sm">Verdict:</span>
             <span className={cn("px-4 py-1.5 rounded-full text-sm font-semibold border", theme.bg, theme.border, theme.text)}>
