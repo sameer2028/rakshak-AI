@@ -21,6 +21,7 @@ from app.schemas.citizen_shield import (
 )
 from app.middleware.exceptions import NotFoundException
 from app.ml.fraud_classifier import fraud_classifier
+from app.services.websocket_service import websocket_manager
 from loguru import logger
 
 
@@ -158,16 +159,26 @@ class CitizenShieldService:
         )
         await complaint.insert()
 
-        if verdict == VerdictType.SCAM:
+        if verdict == VerdictType.SCAM or (verdict == VerdictType.SUSPICIOUS and risk_score >= 70):
+            alert_title = "Citizen Shield: Scam Detected" if verdict == VerdictType.SCAM else "Citizen Shield: Suspicious Activity"
             alert = Alert(
                 alert_type=AlertType.SCAM_DETECTED,
                 severity=AlertSeverity.HIGH if risk_score > 85 else AlertSeverity.MEDIUM,
-                title=f"Citizen Shield: Scam Detected ({request.source})",
+                title=f"{alert_title} ({request.source})",
                 description=f"Risk Score: {risk_score}. {reasons[0] if reasons else 'Suspicious activity reported.'}",
                 source_module="citizen_shield",
                 reference_id=str(complaint.id),
             )
             await alert.insert()
+            
+            # Broadcast the live alert via WebSockets
+            try:
+                alert_data = alert.model_dump(mode="json")
+                alert_data["id"] = str(alert.id)
+                alert_data["type"] = "new_alert"
+                await websocket_manager.broadcast(alert_data)
+            except Exception as e:
+                logger.error(f"Failed to broadcast websocket alert: {e}")
 
         return FraudCheckResponse(
             report_id=str(complaint.id),

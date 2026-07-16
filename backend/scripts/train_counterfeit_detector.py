@@ -25,10 +25,10 @@ from loguru import logger
 # ──────────────────────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────────────────────
-NUM_SAMPLES_PER_CLASS = 600          # 600 real + 600 fake = 1200 total
+NUM_SAMPLES_PER_CLASS = 12          # 12 real + 12 fake = 24 total (Rapid prototype)
 IMG_SIZE = 224                       # ResNet input size
-BATCH_SIZE = 32
-EPOCHS = 12
+BATCH_SIZE = 12
+EPOCHS = 1
 LEARNING_RATE = 1e-4
 DENOMINATIONS = [10, 20, 50, 100, 200, 500]
 

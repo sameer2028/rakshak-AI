@@ -8,9 +8,10 @@ GET   /api/dashboard/complaints        - Recent complaints
 PATCH /api/dashboard/alerts/{id}/resolve - Resolve an alert
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
 from typing import Optional
 
+from app.services.websocket_service import websocket_manager
 from app.schemas.dashboard import (
     DashboardOverview,
     AlertsResponse,
@@ -85,3 +86,15 @@ async def get_alert_evidence(
     """Fetch raw evidence (like transcript) for an alert."""
     service = DashboardService()
     return await service.get_alert_evidence(alert_id)
+
+@router.websocket("/ws/alerts")
+async def websocket_alerts_endpoint(websocket: WebSocket):
+    """Real-time alerts via WebSocket."""
+    await websocket_manager.connect(websocket)
+    try:
+        while True:
+            # We don't expect messages from the client, just keep connection open
+            data = await websocket.receive_text()
+    except WebSocketDisconnect:
+        websocket_manager.disconnect(websocket)
+

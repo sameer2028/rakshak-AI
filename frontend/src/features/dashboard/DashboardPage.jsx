@@ -43,6 +43,35 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // WebSocket for Live Alerts
+  useEffect(() => {
+    // Note: In production this should use the dynamic API_BASE_URL
+    const wsUrl = 'ws://localhost:8000/api/dashboard/ws/alerts';
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        if (message.type === 'new_alert') {
+          setData(prev => {
+            // Prevent duplicate alerts
+            if (prev.alerts.some(a => a.id === message.id)) return prev;
+            return {
+              ...prev,
+              alerts: [message, ...prev.alerts]
+            };
+          });
+        }
+      } catch (err) {
+        console.error("Error parsing websocket message", err);
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
   const handleResolveAlert = (id) => {
     setData(prev => ({
       ...prev,

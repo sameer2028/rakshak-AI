@@ -23,6 +23,7 @@ from app.schemas.scam_detection import (
 from app.schemas.auth import MessageResponse
 from app.middleware.exceptions import NotFoundException
 from app.ml.scam_nlp import nlp_engine
+from app.services.websocket_service import websocket_manager
 from loguru import logger
 
 
@@ -73,6 +74,15 @@ class ScamDetectionService:
                 }
             )
             await alert.insert()
+            
+            # Broadcast the live alert via WebSockets
+            try:
+                alert_data = alert.model_dump(mode="json")
+                alert_data["id"] = str(alert.id)
+                alert_data["type"] = "new_alert"
+                await websocket_manager.broadcast(alert_data)
+            except Exception as e:
+                logger.error(f"Failed to broadcast websocket alert: {e}")
 
         return ScamAnalyzeResponse(
             detection_id=str(complaint.id),

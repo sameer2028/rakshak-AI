@@ -41,10 +41,10 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
               className={cn(
                 "p-3 rounded-lg border flex gap-3 transition-all cursor-pointer",
                 alert.is_resolved 
-                  ? "bg-gray-800/30 border-gray-700/50 opacity-60" 
-                  : alert.severity === 'critical' ? "bg-red-500/10 border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
-                  : alert.severity === 'high' ? "bg-orange-500/10 border-orange-500/30"
-                  : "bg-amber-500/10 border-amber-500/30"
+                  ? "bg-gray-800/30 border-gray-700/50 opacity-60 border-l-[1px]" 
+                  : alert.severity === 'critical' ? "bg-red-500/20 border-red-500/50 border-l-4 border-l-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                  : alert.severity === 'high' ? "bg-orange-500/20 border-orange-500/50 border-l-4 border-l-orange-500"
+                  : "bg-amber-500/20 border-amber-500/50 border-l-4 border-l-amber-500"
               )}
             >
               <AlertTriangle className={cn(
@@ -56,14 +56,14 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
               
               <div className="flex-1">
                 <div className="flex justify-between items-start mb-1">
-                  <h4 className={cn("text-sm font-semibold", alert.is_resolved ? "text-gray-400" : "text-gray-200")}>
+                  <h4 className={cn("font-bold", alert.is_resolved ? "text-sm text-gray-400" : "text-[15px] text-white")}>
                     {alert.title}
                   </h4>
-                  <span className="text-[10px] text-gray-500 font-mono">
+                  <span className="text-[10px] text-gray-500 font-mono mt-1">
                     {new Date(alert.created_at).toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 mb-2 leading-relaxed">{alert.description}</p>
+                <p className={cn("text-xs mb-2 leading-relaxed", alert.is_resolved ? "text-gray-500" : "text-gray-300")}>{alert.description}</p>
                 
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase font-bold text-gray-500 bg-black/20 px-2 py-0.5 rounded">
