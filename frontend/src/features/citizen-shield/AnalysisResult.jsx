@@ -53,6 +53,42 @@ export default function AnalysisResult({ result, language = 'en' }) {
         </div>
       </div>
 
+      {/* Fraud Network Link Status */}
+      {result.fraud_network_match ? (
+        result.fraud_network_match.matched ? (
+          <div className="rounded-2xl border border-red-500/50 bg-red-950/20 p-5 flex items-start gap-4 shadow-glow-red relative overflow-hidden">
+            <div className="absolute -top-10 -left-10 w-24 h-24 rounded-full blur-[40px] bg-red-500 opacity-20" />
+            <ShieldAlert className="w-7 h-7 text-red-500 flex-shrink-0 mt-0.5 animate-pulse relative z-10" />
+            <div className="relative z-10">
+              <h4 className="text-base font-bold text-red-400 tracking-wide">Verified Cybercrime Link Detected</h4>
+              <p className="text-sm text-gray-200 mt-1.5 leading-relaxed">
+                The reported <strong className="capitalize">{result.fraud_network_match.entity_type}</strong> (<code className="text-red-300 font-mono bg-red-950/40 px-1.5 py-0.5 rounded border border-red-500/20">{result.fraud_network_match.entity_value}</code>) was found inside the intelligence database and is directly linked to the <strong className="text-white bg-red-500/20 px-2 py-0.5 rounded border border-red-500/30">{result.fraud_network_match.community_name}</strong>.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/10 p-5 flex items-start gap-4 relative overflow-hidden">
+            <CheckCircle2 className="w-7 h-7 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-base font-semibold text-emerald-400 tracking-wide">Fraud Network Grid Check</h4>
+              <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
+                No matching record found in active command center Fraud Networks.
+              </p>
+            </div>
+          </div>
+        )
+      ) : (
+        <div className="rounded-2xl border border-gray-800 bg-gray-900/10 p-5 flex items-start gap-4">
+          <Activity className="w-7 h-7 text-gray-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="text-base font-semibold text-gray-400 tracking-wide">Fraud Network Grid Check</h4>
+            <p className="text-sm text-gray-400 mt-1.5 leading-relaxed">
+              No matching record found in active command center Fraud Networks.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Reasons Panel */}
         <div className="glass-card p-5 border border-gray-700/50">

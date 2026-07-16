@@ -67,3 +67,4 @@ def get_database():
     if client is None:
         raise RuntimeError("MongoDB client not initialized. Call connect_to_mongodb() first.")
     return client[settings.DATABASE_NAME]
+
