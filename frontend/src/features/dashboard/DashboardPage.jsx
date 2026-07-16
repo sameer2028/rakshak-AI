@@ -19,13 +19,16 @@ export default function DashboardPage() {
   const loadDashboard = async () => {
     try {
       // In a real app we'd fetch all these in parallel using Promise.all
-      const overviewRes = await dashboardApi.getOverview();
-      const alertsRes = await dashboardApi.getAlerts(null, false, 20);
+      const [overviewRes, alertsRes, highRiskRes] = await Promise.all([
+        dashboardApi.getOverview(),
+        dashboardApi.getAlerts(null, false, 20),
+        dashboardApi.getHighRiskAccounts(10)
+      ]);
       
       setData({
         overview: overviewRes.data,
         alerts: alertsRes.data.alerts,
-        highRisk: [], // Will use dummy in component
+        highRisk: highRiskRes.data.accounts,
       });
     } catch (err) {
       console.error('Failed to load dashboard data', err);
@@ -43,7 +46,7 @@ export default function DashboardPage() {
   const handleResolveAlert = (id) => {
     setData(prev => ({
       ...prev,
-      alerts: prev.alerts.map(a => a.alert_id === id ? { ...a, is_resolved: true } : a)
+      alerts: prev.alerts.map(a => a.id === id ? { ...a, is_resolved: true } : a)
     }));
   };
 

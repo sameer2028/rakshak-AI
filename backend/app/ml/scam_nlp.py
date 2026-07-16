@@ -23,6 +23,15 @@ class ScamNLPEngine:
             
         try:
             self.model = joblib.load(model_path)
+            
+            # Hotfix for scikit-learn 1.5+ backwards compatibility with older pickles
+            try:
+                clf = self.model.named_steps['clf'] if hasattr(self.model, 'named_steps') else self.model.steps[-1][1] if hasattr(self.model, 'steps') else self.model
+                if type(clf).__name__ == 'LogisticRegression' and not hasattr(clf, 'multi_class'):
+                    clf.multi_class = 'auto'
+            except Exception as patch_e:
+                logger.warning(f"Failed to patch model compatibility: {patch_e}")
+
             logger.info(f"ScamNLPEngine: Model loaded from {model_path}")
         except Exception as e:
             logger.error(f"Failed to load ScamNLPEngine model from {model_path}: {e}")

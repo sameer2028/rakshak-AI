@@ -124,7 +124,7 @@ export default function InteractiveScenario({ onSubmit, isLoading }) {
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
+      <div className="flex justify-between items-center pb-4 border-b border-gray-700/50 flex-shrink-0">
         <div>
           <h3 className="text-lg font-semibold text-white flex items-center gap-2">
             <Gamepad2 className="w-5 h-5 text-orange-400" />
@@ -141,7 +141,7 @@ export default function InteractiveScenario({ onSubmit, isLoading }) {
         </button>
       </div>
 
-      <div className="flex-1 bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 overflow-y-auto min-h-[300px] max-h-[300px] flex flex-col space-y-4">
+      <div className="flex-1 bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 overflow-y-auto min-h-0 flex flex-col space-y-4">
         {history.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.speaker === 'receiver' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] rounded-2xl px-4 py-3 flex gap-3 ${
@@ -166,7 +166,7 @@ export default function InteractiveScenario({ onSubmit, isLoading }) {
       </div>
 
       {!isFinished && history[history.length - 1]?.speaker === 'caller' && (
-        <div className="grid grid-cols-1 gap-2 pt-2">
+        <div className="grid grid-cols-1 gap-2 pt-2 flex-shrink-0">
           <p className="text-xs text-gray-400 mb-1 font-medium">Choose your reply:</p>
           {currentStep?.options.map((opt, i) => (
             <button
@@ -181,7 +181,7 @@ export default function InteractiveScenario({ onSubmit, isLoading }) {
       )}
 
       {isFinished && (
-        <div className="bg-gray-800/80 border border-gray-700 p-4 rounded-xl text-center space-y-3">
+        <div className="bg-gray-800/80 border border-gray-700 p-4 rounded-xl text-center space-y-3 flex-shrink-0">
           <p className="text-gray-300 font-medium">Scenario Finished.</p>
           <button
             onClick={handleAnalyze}

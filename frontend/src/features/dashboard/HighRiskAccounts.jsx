@@ -1,14 +1,15 @@
 import { ShieldAlert, ArrowRight } from 'lucide-react';
-import { formatCurrency } from '../../lib/utils';
 
 export default function HighRiskAccounts({ accounts }) {
-  // Using dummy data if accounts array is empty/undefined
-  const displayData = accounts?.length ? accounts : [
-    { account: 'XXXX-4392', bank: 'SBI', risk_level: 'critical', total_amount: 1450000 },
-    { account: 'XXXX-9104', bank: 'HDFC', risk_level: 'critical', total_amount: 890000 },
-    { account: 'XXXX-2231', bank: 'ICICI', risk_level: 'high', total_amount: 450000 },
-    { account: 'XXXX-5589', bank: 'Axis', risk_level: 'high', total_amount: 320000 },
-  ];
+  if (!accounts || accounts.length === 0) {
+    return (
+      <div className="glass-card border border-gray-700/50 rounded-xl overflow-hidden p-8 flex flex-col items-center justify-center">
+        <ShieldAlert className="w-12 h-12 text-gray-500 mb-4 opacity-50" />
+        <h3 className="text-gray-400 font-medium text-lg">No High-Risk Accounts Detected</h3>
+        <p className="text-gray-500 text-sm mt-2">The system is currently monitoring for active threats.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-card border border-gray-700/50 rounded-xl overflow-hidden">
@@ -26,29 +27,36 @@ export default function HighRiskAccounts({ accounts }) {
         <table className="w-full text-left">
           <thead>
             <tr className="bg-gray-900/50 text-xs text-gray-500 border-b border-gray-800 uppercase tracking-wider">
-              <th className="p-3 font-medium">Account</th>
-              <th className="p-3 font-medium">Bank</th>
-              <th className="p-3 font-medium">Risk</th>
-              <th className="p-3 font-medium text-right">Suspected Amt</th>
+              <th className="p-3 font-medium">Identifier</th>
+              <th className="p-3 font-medium">Type</th>
+              <th className="p-3 font-medium">Risk Score</th>
+              <th className="p-3 font-medium">Risk Level</th>
+              <th className="p-3 font-medium text-right">Fraud Connections</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800/50">
-            {displayData.map((acc, idx) => (
-              <tr key={idx} className="hover:bg-gray-800/30 transition-colors group text-sm">
-                <td className="p-3 font-mono text-gray-300">{acc.account}</td>
-                <td className="p-3 text-gray-400">{acc.bank}</td>
-                <td className="p-3">
-                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
-                    acc.risk_level === 'critical' ? 'bg-red-500/20 text-red-400 border border-red-500/20' : 'bg-orange-500/20 text-orange-400 border border-orange-500/20'
-                  }`}>
-                    {acc.risk_level}
-                  </span>
-                </td>
-                <td className="p-3 text-right font-mono text-gray-300">
-                  {formatCurrency(acc.total_amount)}
-                </td>
-              </tr>
-            ))}
+            {accounts.map((acc, idx) => {
+              const riskLevel = acc.risk_score >= 85 ? 'critical' : acc.risk_score >= 60 ? 'high' : 'medium';
+              return (
+                <tr key={acc.account_id || idx} className="hover:bg-gray-800/30 transition-colors group text-sm">
+                  <td className="p-3 font-mono text-gray-300">{acc.identifier}</td>
+                  <td className="p-3 text-gray-400 capitalize">{acc.account_type.replace('_', ' ')}</td>
+                  <td className="p-3 font-mono text-gray-300">{acc.risk_score}/100</td>
+                  <td className="p-3">
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+                      riskLevel === 'critical' ? 'bg-red-500/20 text-red-400 border border-red-500/20' : 
+                      riskLevel === 'high' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/20' :
+                      'bg-amber-500/20 text-amber-400 border border-amber-500/20'
+                    }`}>
+                      {riskLevel}
+                    </span>
+                  </td>
+                  <td className="p-3 text-right font-mono text-gray-300">
+                    {acc.fraud_count} links
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

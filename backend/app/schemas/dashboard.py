@@ -12,6 +12,13 @@ from pydantic import BaseModel, Field
 
 # ─── Responses ───────────────────────────────────────────────────
 
+class TopCommunity(BaseModel):
+    id: str
+    nodes: int
+    risk: int
+    main_type: str
+
+
 class DashboardOverview(BaseModel):
     """Command Center summary statistics."""
     total_scams_detected: int
@@ -20,12 +27,18 @@ class DashboardOverview(BaseModel):
     districts_at_risk: int
     counterfeit_notes_detected: int
     total_amount_saved: float
+    top_communities: List[TopCommunity] = Field(default_factory=list)
     trends: dict = Field(
         default_factory=dict,
         description="scams_last_7_days, fraud_rings_last_7_days, complaints_last_7_days",
     )
     last_updated: datetime
 
+
+class AlertEvidenceResponse(BaseModel):
+    """Evidence data associated with an alert."""
+    evidence_text: str
+    evidence_type: str = Field(default="transcript")
 
 class AlertItem(BaseModel):
     """Single alert in the live feed."""
@@ -35,6 +48,10 @@ class AlertItem(BaseModel):
     title: str
     description: str
     source_module: str
+    reference_id: Optional[str] = None
+    metadata: dict = Field(default_factory=dict)
+    state: Optional[str] = None
+    district: Optional[str] = None
     is_read: bool
     is_resolved: bool
     created_at: datetime

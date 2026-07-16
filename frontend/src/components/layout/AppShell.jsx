@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -7,13 +8,15 @@ import Header from './Header';
  * Used for all authenticated pages.
  */
 export default function AppShell() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
     <div className="flex min-h-screen bg-surface-primary">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
       {/* Main Content */}
-      <div className="flex-1 ml-[260px] transition-all duration-300">
+      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-[72px]' : 'ml-[260px]'}`}>
         <Header />
         <main className="p-6">
           <Outlet />

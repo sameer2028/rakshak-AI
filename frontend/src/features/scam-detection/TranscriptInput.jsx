@@ -28,10 +28,10 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="flex flex-col h-full gap-6">
       {/* Transcript Area */}
-      <div>
-        <div className="flex justify-between items-end mb-2">
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex justify-between items-end mb-2 flex-shrink-0">
           <label className="block text-sm font-medium text-gray-300">
             Call Transcript
           </label>
@@ -39,14 +39,13 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
             <Mic className="w-3 h-3" /> Auto-transcription active
           </span>
         </div>
-        <div className="relative group">
+        <div className="relative group flex-1 min-h-0">
           <textarea
             name="transcript"
             required
-            rows="8"
             value={formData.transcript}
             onChange={handleChange}
-            className="block w-full p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y font-mono text-sm leading-relaxed"
+            className="block w-full h-full p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none font-mono text-sm leading-relaxed custom-scrollbar"
             placeholder="Paste the audio transcript here...&#10;&#10;Example:&#10;[00:00] Caller: Hello, am I speaking to John Doe?&#10;[00:05] Receiver: Yes.&#10;[00:07] Caller: This is officer Sharma from the CBI. There is a parcel in your name stopped at customs containing illegal items. You are under digital arrest..."
           />
           {isLoading && (
@@ -60,7 +59,7 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
       </div>
 
       {/* Metadata Panel */}
-      <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl p-5">
+      <div className="flex-shrink-0 bg-gray-800/30 border border-gray-700/50 rounded-xl p-5">
         <h4 className="text-sm font-medium text-gray-300 mb-4 flex items-center gap-2">
           <Radio className="w-4 h-4 text-gray-400" />
           Call Metadata (Optional)
@@ -117,7 +116,7 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
       <button
         type="submit"
         disabled={isLoading || !formData.transcript.trim()}
-        className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-glow-blue text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-shrink-0 w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-glow-blue text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>

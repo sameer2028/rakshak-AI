@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Send, Loader2, AlertCircle } from 'lucide-react';
+import { Mic, MicOff, Send, Loader2, AlertCircle, Trash2 } from 'lucide-react';
 
 export default function LiveMicrophone({ onSubmit, isLoading }) {
   const [isListening, setIsListening] = useState(false);
@@ -74,8 +74,8 @@ export default function LiveMicrophone({ onSubmit, isLoading }) {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-6">
-      <div className="pb-4 border-b border-gray-700/50">
+    <div className="flex-1 flex flex-col min-h-0 space-y-4">
+      <div className="pb-4 border-b border-gray-700/50 flex-shrink-0">
         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
           <Mic className="w-5 h-5 text-red-400" />
           Live Microphone Demo
@@ -92,7 +92,7 @@ export default function LiveMicrophone({ onSubmit, isLoading }) {
         </div>
       )}
 
-      <div className="flex justify-center py-6">
+      <div className="flex justify-center py-2 flex-shrink-0">
         <button
           onClick={toggleListening}
           className={`relative flex items-center justify-center w-24 h-24 rounded-full transition-all ${
@@ -112,24 +112,32 @@ export default function LiveMicrophone({ onSubmit, isLoading }) {
           )}
         </button>
       </div>
-      <div className="text-center text-sm font-medium text-gray-300">
+      <div className="text-center text-sm font-medium text-gray-300 flex-shrink-0">
         {isListening ? 'Listening... Speak now' : 'Click microphone to start listening'}
       </div>
 
-      <div className="relative group flex-1">
+      <div className="relative group flex-1 flex flex-col min-h-0">
         <textarea
           readOnly
-          rows="6"
           value={transcript}
-          className="block w-full h-full min-h-[150px] p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 focus:outline-none transition-all resize-y font-mono text-sm leading-relaxed"
+          className="block w-full h-full min-h-[100px] p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 focus:outline-none transition-all resize-none font-mono text-sm leading-relaxed custom-scrollbar"
           placeholder="Your transcribed speech will appear here in real-time..."
         />
+        {transcript && (
+          <button
+            onClick={() => setTranscript('')}
+            className="absolute top-3 right-3 p-2 bg-gray-800/80 text-gray-400 hover:text-red-400 hover:bg-gray-700 rounded-lg transition-all border border-gray-700 shadow-sm opacity-60 hover:opacity-100"
+            title="Clear transcript"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       <button
         onClick={handleAnalyze}
         disabled={isLoading || !transcript.trim()}
-        className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-glow-blue text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-shrink-0 w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-glow-blue text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>

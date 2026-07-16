@@ -36,7 +36,7 @@ class ScamStatusUpdateRequest(BaseModel):
 class ThreatIndicator(BaseModel):
     indicator: str
     category: str = Field(
-        description="impersonation | fear_language | money_demand | spoofing | pressure_tactic"
+        description="impersonation | fear_language | money_demand | sensitive_info | spoofing | fraud_network | pressure_tactic"
     )
     severity: str = Field(description="low | medium | high | critical")
     evidence: str
@@ -54,6 +54,10 @@ class ScamAnalyzeResponse(BaseModel):
     threat_indicators: List[ThreatIndicator]
     recommended_actions: List[str]
     analyzed_at: datetime
+    fraud_network_match: Optional[dict] = Field(
+        default=None,
+        description="If a phone/UPI/bank was found in the fraud intelligence graph, details are here",
+    )
 
 
 class ScamDetectionSummary(BaseModel):

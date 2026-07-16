@@ -6,6 +6,7 @@ Aggregates data from all modules into dashboard panels.
 """
 
 from datetime import datetime, timedelta, timezone
+from beanie import PydanticObjectId
 from app.models.complaint import Complaint, VerdictType
 from app.models.fraud_node import FraudNode
 from app.models.currency_check import CurrencyCheck, CurrencyVerdict
@@ -20,6 +21,7 @@ from app.schemas.dashboard import (
     HighRiskAccountsResponse,
     RecentComplaint,
     RecentComplaintsResponse,
+    AlertEvidenceResponse,
 )
 from app.schemas.auth import MessageResponse
 from app.middleware.exceptions import NotFoundException
@@ -75,6 +77,42 @@ class DashboardService:
                     
         scams_last_7_days = [{"name": k, "scams": v["scams"], "blocked": v["blocked"]} for k, v in daily_trends.items()]
 
+        # Calculate Top Fraud Rings (Communities)
+        community_aggregation = await FraudNode.aggregate([
+            {"$match": {"community": {"$ne": None}}},
+            {"$group": {
+                "_id": "$community",
+                "nodes": {"$sum": 1},
+                "avg_risk": {"$avg": "$risk_score"},
+                "types": {"$push": "$node_type"}
+            }},
+            {"$sort": {"avg_risk": -1, "nodes": -1}},
+            {"$limit": 3}
+        ]).to_list()
+
+        top_communities = []
+        for comm in community_aggregation:
+            # Find the most common node type to guess the main activity
+            types = comm.get("types", [])
+            main_type_enum = max(set(types), key=types.count) if types else "unknown"
+            
+            # Map enum to a readable string
+            type_mapping = {
+                "phone": "Phone Network",
+                "upi": "UPI Fraud",
+                "bank_account": "Money Laundering",
+                "suspect": "Crime Syndicate",
+                "victim": "Phishing Ring"
+            }
+            main_type = type_mapping.get(main_type_enum, "Digital Arrest")
+
+            top_communities.append({
+                "id": f"C-{comm['_id']}",
+                "nodes": comm["nodes"],
+                "risk": int(comm["avg_risk"]),
+                "main_type": main_type
+            })
+
         return DashboardOverview(
             total_scams_detected=total_scams,
             total_scams_blocked=total_scams + total_suspicious,
@@ -82,6 +120,7 @@ class DashboardService:
             districts_at_risk=high_risk_districts,
             counterfeit_notes_detected=counterfeit_count,
             total_amount_saved=total_saved,
+            top_communities=top_communities,
             trends={
                 "scams_last_7_days": scams_last_7_days,
                 "fraud_rings_last_7_days": [],
@@ -115,6 +154,10 @@ class DashboardService:
                     title=a.title,
                     description=a.description,
                     source_module=a.source_module,
+                    reference_id=a.reference_id,
+                    metadata=a.metadata,
+                    state=a.state,
+                    district=a.district,
                     is_read=a.is_read,
                     is_resolved=a.is_resolved,
                     created_at=a.created_at,
@@ -179,7 +222,7 @@ class DashboardService:
 
     async def resolve_alert(self, alert_id: str, user: User) -> MessageResponse:
         """Mark an alert as resolved."""
-        alert = await Alert.get(alert_id)
+        alert = await Alert.get(PydanticObjectId(alert_id))
         if not alert:
             raise NotFoundException("Alert", alert_id)
 
@@ -190,3 +233,33 @@ class DashboardService:
         await alert.save()
 
         return MessageResponse(message=f"Alert {alert_id} resolved")
+
+    async def get_alert_evidence(self, alert_id: str) -> AlertEvidenceResponse:
+        """Fetch raw evidence for an alert based on its reference."""
+        alert = await Alert.get(PydanticObjectId(alert_id))
+        if not alert:
+            raise NotFoundException("Alert", alert_id)
+
+        evidence_text = "No additional evidence found for this alert."
+        evidence_type = "text"
+
+        if alert.reference_id:
+            if alert.source_module in ["scam_detection", "citizen_shield"]:
+                complaint = await Complaint.get(alert.reference_id)
+                if complaint and complaint.message:
+                    evidence_text = complaint.message
+                    evidence_type = "transcript"
+            elif alert.source_module == "fraud_network":
+                node = await FraudNode.find_one(FraudNode.node_id == alert.reference_id)
+                if node:
+                    evidence_text = f"Entity: {node.label}\nType: {node.node_type.value}\nRisk: {node.risk_score}\n"
+                    if node.properties:
+                        evidence_text += "\nProperties:\n"
+                        for k, v in node.properties.items():
+                            evidence_text += f"- {k}: {v}\n"
+                    evidence_type = "node_details"
+
+        return AlertEvidenceResponse(
+            evidence_text=evidence_text,
+            evidence_type=evidence_type
+        )

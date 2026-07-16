@@ -1,11 +1,11 @@
-import { ShieldAlert, CheckCircle2, AlertTriangle, Shield, CheckCircle } from 'lucide-react';
+import { ShieldAlert, CheckCircle2, AlertTriangle, Shield, CheckCircle, Network } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import RiskMeter from '../../components/common/RiskMeter';
 
 export default function ScamResult({ result }) {
   if (!result) return null;
 
-  const { is_scam, scam_type, risk_score, confidence, threat_indicators, recommended_actions } = result;
+  const { is_scam, scam_type, risk_score, confidence, threat_indicators, recommended_actions, fraud_network_match } = result;
 
   const isSafe = !is_scam;
   const themeClass = isSafe ? 'text-emerald-400' : 'text-red-400';
@@ -54,6 +54,38 @@ export default function ScamResult({ result }) {
 
       {!isSafe && (
         <>
+          {/* Fraud Network Match Warning */}
+          {fraud_network_match?.matched && (
+            <div className="relative overflow-hidden bg-gradient-to-r from-red-900/40 via-purple-900/30 to-red-900/40 border-2 border-red-500/50 rounded-xl p-5 animate-pulse-slow">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-purple-500/5 animate-pulse" />
+              <div className="relative flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 border border-red-500/30">
+                  <Network className="w-6 h-6 text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-base font-bold text-red-400 flex items-center gap-2 mb-1">
+                    🚨 FRAUD NETWORK MATCH
+                  </h4>
+                  <p className="text-sm text-red-200 mb-2">
+                    The {fraud_network_match.entity_type === 'phone' ? 'phone number' : fraud_network_match.entity_type === 'upi' ? 'UPI ID' : 'bank account'}{' '}
+                    <strong className="text-white font-mono">{fraud_network_match.entity_value}</strong>{' '}
+                    was found in our active fraud intelligence network!
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <span className="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs font-medium">
+                      🕸️ {fraud_network_match.community_name}
+                    </span>
+                    {fraud_network_match.node_label && (
+                      <span className="px-3 py-1 bg-red-500/20 text-red-300 border border-red-500/30 rounded-full text-xs font-medium">
+                        Entity: {fraud_network_match.node_label}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Threat Indicators */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white flex items-center gap-2">

@@ -120,14 +120,27 @@ class FraudNetworkService:
             search_filter["node_type"] = request.node_type
 
         nodes = await FraudNode.find(search_filter).limit(request.limit).to_list()
-        node_ids = [n.node_id for n in nodes]
+        node_ids = set(n.node_id for n in nodes)
 
         edges = await FraudEdge.find(
             {"$or": [
-                {"source_node_id": {"$in": node_ids}},
-                {"target_node_id": {"$in": node_ids}},
+                {"source_node_id": {"$in": list(node_ids)}},
+                {"target_node_id": {"$in": list(node_ids)}},
             ]}
         ).to_list()
+        
+        # Include 1-hop connected nodes to complete the graph
+        missing_node_ids = set()
+        for e in edges:
+            missing_node_ids.add(e.source_node_id)
+            missing_node_ids.add(e.target_node_id)
+            
+        missing_node_ids = missing_node_ids - node_ids
+        if missing_node_ids:
+            additional_nodes = await FraudNode.find(
+                {"node_id": {"$in": list(missing_node_ids)}}
+            ).to_list()
+            nodes.extend(additional_nodes)
 
         return GraphResponse(
             nodes=[self._to_graph_node(n) for n in nodes],

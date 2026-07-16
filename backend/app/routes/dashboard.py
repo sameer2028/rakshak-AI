@@ -16,6 +16,7 @@ from app.schemas.dashboard import (
     AlertsResponse,
     HighRiskAccountsResponse,
     RecentComplaintsResponse,
+    AlertEvidenceResponse,
 )
 from app.schemas.auth import MessageResponse
 from app.middleware.dependencies import require_roles
@@ -75,3 +76,12 @@ async def resolve_alert(
     """Mark an alert as resolved."""
     service = DashboardService()
     return await service.resolve_alert(alert_id, current_user)
+
+@router.get("/alerts/{alert_id}/evidence", response_model=AlertEvidenceResponse)
+async def get_alert_evidence(
+    alert_id: str,
+    current_user: User = Depends(require_roles(["police", "admin"])),
+):
+    """Fetch raw evidence (like transcript) for an alert."""
+    service = DashboardService()
+    return await service.get_alert_evidence(alert_id)

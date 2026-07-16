@@ -13,6 +13,7 @@ import FraudNetworkPage from './features/fraud-network/FraudNetworkPage';
 import CrimeHeatmapPage from './features/crime-heatmap/CrimeHeatmapPage';
 import CounterfeitPage from './features/counterfeit/CounterfeitPage';
 import DashboardPage from './features/dashboard/DashboardPage';
+import AlertsPage from './features/dashboard/AlertsPage';
 
 // Placeholder components for Phase 3
 const Placeholder = ({ title }) => (
@@ -37,7 +38,7 @@ function App() {
             {/* Dashboard - Police & Admin */}
             <Route element={<ProtectedRoute allowedRoles={['police', 'admin']} />}>
               <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-              <Route path={ROUTES.ALERTS} element={<DashboardPage />} />
+              <Route path={ROUTES.ALERTS} element={<AlertsPage />} />
             </Route>
 
             {/* Citizen Shield - All Roles */}

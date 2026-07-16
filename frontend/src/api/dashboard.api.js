@@ -18,4 +18,6 @@ export const dashboardApi = {
   },
   resolveAlert: (alertId) =>
     api.patch(`/dashboard/alerts/${alertId}/resolve`),
+  getAlertEvidence: (alertId) =>
+    api.get(`/dashboard/alerts/${alertId}/evidence`),
 };

@@ -16,7 +16,6 @@ import {
   ChevronRight,
   ShieldAlert,
 } from 'lucide-react';
-import { useState } from 'react';
 
 const NAV_ITEMS = [
   {
@@ -63,8 +62,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export default function Sidebar({ collapsed, onToggle }) {
   const { user, logout } = useAuthStore();
   const location = useLocation();
 
@@ -161,7 +159,7 @@ export default function Sidebar() {
 
         {/* Collapse Toggle */}
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onToggle}
           className="flex items-center justify-center w-full py-2 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-gray-800/50 transition-all"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}

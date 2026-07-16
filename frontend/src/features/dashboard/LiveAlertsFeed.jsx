@@ -1,8 +1,11 @@
 import { ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { dashboardApi } from '../../api/dashboard.api';
+import AlertModal from './AlertModal';
+import { useState } from 'react';
 
 export default function LiveAlertsFeed({ alerts, onResolve }) {
+  const [selectedAlert, setSelectedAlert] = useState(null);
   
   const handleResolve = async (id) => {
     try {
@@ -33,9 +36,10 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
         ) : (
           alerts.map((alert) => (
             <div 
-              key={alert.alert_id} 
+              key={alert.id} 
+              onClick={() => setSelectedAlert(alert)}
               className={cn(
-                "p-3 rounded-lg border flex gap-3 transition-all",
+                "p-3 rounded-lg border flex gap-3 transition-all cursor-pointer",
                 alert.is_resolved 
                   ? "bg-gray-800/30 border-gray-700/50 opacity-60" 
                   : alert.severity === 'critical' ? "bg-red-500/10 border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
@@ -68,7 +72,7 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
                   
                   {!alert.is_resolved && (
                     <button 
-                      onClick={() => handleResolve(alert.alert_id)}
+                      onClick={(e) => { e.stopPropagation(); handleResolve(alert.id); }}
                       className="flex items-center gap-1 text-xs font-medium text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded transition-colors"
                     >
                       <CheckCircle2 className="w-3 h-3" /> Resolve
@@ -80,6 +84,16 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
           ))
         )}
       </div>
+
+      <AlertModal 
+        alert={selectedAlert} 
+        onClose={() => setSelectedAlert(null)} 
+        onResolve={(id) => {
+           // Wait for the Dashboard API call inside AlertModal to complete, 
+           // but we also need to trigger the parent onResolve here
+           onResolve(id);
+        }} 
+      />
     </div>
   );
 }

@@ -36,6 +36,9 @@ class ScamDetectionService:
         # ML NLP scam classifier
         result = self._ml_scam_analysis(request)
 
+        # Cross-reference with Fraud Network Intelligence
+        network_match = await self._check_fraud_network(request, result)
+
         response_time_ms = int((time.time() - start_time) * 1000)
 
         # Persist as complaint
@@ -52,6 +55,7 @@ class ScamDetectionService:
             recommended_actions=result["recommended_actions"],
             response_time_ms=response_time_ms,
             status="analyzed",
+            fraud_network_match=network_match,
         )
         await complaint.insert()
 
@@ -63,6 +67,10 @@ class ScamDetectionService:
                 description=f"Risk Score: {result['risk_score']}. {result['threat_indicators'][0]['indicator'] if result['threat_indicators'] else 'Impersonation scam detected.'}",
                 source_module="scam_detection",
                 reference_id=str(complaint.id),
+                metadata={
+                    "transcript_preview": request.transcript[:300] + ("..." if len(request.transcript) > 300 else ""),
+                    "detected_type": result["scam_type_enum"],
+                }
             )
             await alert.insert()
 
@@ -75,6 +83,7 @@ class ScamDetectionService:
             threat_indicators=[ThreatIndicator(**ti) for ti in result["threat_indicators"]],
             recommended_actions=result["recommended_actions"],
             analyzed_at=complaint.created_at,
+            fraud_network_match=network_match,
         )
 
     async def analyze_live(self, request: ScamAnalyzeRequest) -> ScamAnalyzeResponse:
@@ -83,6 +92,9 @@ class ScamDetectionService:
 
         # ML NLP scam classifier
         result = self._ml_scam_analysis(request)
+
+        # Cross-reference with Fraud Network Intelligence
+        network_match = await self._check_fraud_network(request, result)
 
         return ScamAnalyzeResponse(
             detection_id="live-analysis-simulated",
@@ -93,6 +105,7 @@ class ScamDetectionService:
             threat_indicators=[ThreatIndicator(**ti) for ti in result["threat_indicators"]],
             recommended_actions=result["recommended_actions"],
             analyzed_at=datetime.now(timezone.utc),
+            fraud_network_match=network_match,
         )
 
     async def list_detections(
@@ -162,7 +175,7 @@ class ScamDetectionService:
         impersonation_patterns = {
             "cbi": "Fake CBI Impersonation",
             "enforcement directorate": "Fake ED Impersonation",
-            "ed ": "Fake ED Impersonation",
+            "ed": "Fake ED Impersonation",
             "customs": "Fake Customs Impersonation",
             "police": "Government Impersonation",
             "sbi": "Bank Impersonation",
@@ -170,8 +183,9 @@ class ScamDetectionService:
             "bank": "Bank Impersonation",
         }
 
+        import re
         for keyword, label in impersonation_patterns.items():
-            if keyword in transcript_lower:
+            if re.search(rf"\b{re.escape(keyword)}\b", transcript_lower):
                 threat_indicators.append({
                     "indicator": label,
                     "category": "impersonation",
@@ -182,7 +196,7 @@ class ScamDetectionService:
         # Fear language
         fear_words = ["arrest", "warrant", "jail", "prison", "case filed", "fir", "digital arrest", "blocked", "deactivated", "illegal", "narcotics", "penalty"]
         for word in fear_words:
-            if word.lower() in transcript_lower:
+            if re.search(rf"\b{re.escape(word.lower())}\b", transcript_lower):
                 threat_indicators.append({
                     "indicator": f"Fear language: '{word}'",
                     "category": "fear_language",
@@ -190,15 +204,26 @@ class ScamDetectionService:
                     "evidence": f"Transcript contains fear-inducing term: '{word}'",
                 })
 
-        # Money and sensitive info demand
-        money_words = ["transfer", "pay", "lakh", "crore", "send money", "neft", "rtgs", "upi", "otp", "share", "cvv", "pin", "deposit"]
+        # Money demand
+        money_words = ["transfer", "pay", "lakh", "crore", "send money", "neft", "rtgs", "upi", "deposit"]
         for word in money_words:
-            if word.lower() in transcript_lower:
+            if re.search(rf"\b{re.escape(word.lower())}\b", transcript_lower):
                 threat_indicators.append({
                     "indicator": f"Urgent money demand: '{word}'",
                     "category": "money_demand",
                     "severity": "high",
                     "evidence": f"Financial transaction term detected: '{word}'",
+                })
+                
+        # Sensitive info demand
+        sensitive_words = ["otp", "share", "cvv", "pin", "password"]
+        for word in sensitive_words:
+            if re.search(rf"\b{re.escape(word.lower())}\b", transcript_lower):
+                threat_indicators.append({
+                    "indicator": f"Sensitive info demand: '{word}'",
+                    "category": "sensitive_info",
+                    "severity": "critical",
+                    "evidence": f"Request for confidential data detected: '{word}'",
                 })
 
         # VoIP detection
@@ -209,6 +234,24 @@ class ScamDetectionService:
                 "severity": "medium",
                 "evidence": "Call originated from VoIP service",
             })
+
+        # Boost risk score if the ML model suspects a scam and severe indicators are present
+        if is_scam and threat_indicators:
+            for indicator in threat_indicators:
+                if indicator["severity"] == "critical":
+                    risk_score += 25
+                elif indicator["severity"] == "high":
+                    risk_score += 15
+                    
+            risk_score = min(risk_score, 99)
+            
+            has_critical = any(ind["severity"] == "critical" for ind in threat_indicators)
+            has_high = any(ind["severity"] == "high" for ind in threat_indicators)
+            
+            if has_critical:
+                risk_score = max(risk_score, 85)
+            elif has_high:
+                risk_score = max(risk_score, 75)
 
         recommended_actions = []
         if is_scam:
@@ -235,4 +278,140 @@ class ScamDetectionService:
             "confidence": confidence,
             "threat_indicators": threat_indicators,
             "recommended_actions": recommended_actions,
+        }
+
+    async def _check_fraud_network(self, request: ScamAnalyzeRequest, result: dict) -> dict:
+        """Cross-reference entities from transcript/metadata against the Fraud Network graph."""
+        from app.models.fraud_node import FraudNode
+
+        COMMUNITY_NAMES = {
+            0: "Jamtara Digital Arrest Ring",
+            1: "Mumbai UPI Fraud Syndicate",
+            2: "Delhi Fake CBI Gang",
+            3: "Hyderabad Phishing Network",
+            4: "Kolkata Counterfeit Ring",
+        }
+
+        network_match = {
+            "matched": False,
+            "entity_type": None,
+            "entity_value": None,
+            "community_name": None,
+            "node_label": None,
+            "risk_score": None,
+        }
+
+        try:
+            # 1. Check caller phone number from metadata
+            caller_number = None
+            if request.phone_metadata and request.phone_metadata.caller_number:
+                raw = request.phone_metadata.caller_number
+                cleaned = "".join(c for c in raw if c.isdigit())
+                if len(cleaned) == 10:
+                    caller_number = f"+91{cleaned}"
+                elif len(cleaned) == 12 and cleaned.startswith("91"):
+                    caller_number = f"+{cleaned}"
+                else:
+                    caller_number = raw
+
+                matched_node = await FraudNode.find_one({
+                    "node_type": "phone",
+                    "$or": [
+                        {"properties.phone_number": caller_number},
+                        {"properties.phone_number": raw},
+                    ]
+                })
+                if matched_node:
+                    network_match = self._build_network_match(matched_node, "phone", raw, COMMUNITY_NAMES)
+
+            # 2. Extract phone numbers from transcript and check
+            if not network_match["matched"]:
+                import re
+                phone_pattern = r'(?:\+91[\-\s]?)?[6789]\d{9}'
+                phones = list(set(re.findall(phone_pattern, request.transcript)))
+                for phone in phones:
+                    cleaned = "".join(c for c in phone if c.isdigit())
+                    if len(cleaned) == 10:
+                        normalized = f"+91{cleaned}"
+                    else:
+                        normalized = phone
+                    matched_node = await FraudNode.find_one({
+                        "node_type": "phone",
+                        "$or": [
+                            {"properties.phone_number": normalized},
+                            {"properties.phone_number": phone},
+                        ]
+                    })
+                    if matched_node:
+                        network_match = self._build_network_match(matched_node, "phone", phone, COMMUNITY_NAMES)
+                        break
+
+            # 3. Extract UPI IDs from transcript and check
+            if not network_match["matched"]:
+                import re
+                upi_pattern = r'[a-zA-Z0-9.\-_]{2,64}@[a-zA-Z]{2,64}'
+                upis = list(set(re.findall(upi_pattern, request.transcript)))
+                for upi in upis:
+                    matched_node = await FraudNode.find_one({
+                        "node_type": "upi",
+                        "properties.upi_id": upi.lower()
+                    })
+                    if matched_node:
+                        network_match = self._build_network_match(matched_node, "upi", upi, COMMUNITY_NAMES)
+                        break
+
+            # 4. Extract bank accounts from transcript and check
+            if not network_match["matched"]:
+                import re
+                account_pattern = r'\b\d{9,18}\b'
+                accounts = list(set(re.findall(account_pattern, request.transcript)))
+                for acc in accounts:
+                    matched_node = await FraudNode.find_one({
+                        "node_type": "bank_account",
+                        "properties.bank_account": acc
+                    })
+                    if matched_node:
+                        network_match = self._build_network_match(matched_node, "bank_account", acc, COMMUNITY_NAMES)
+                        break
+
+            # If match found, boost the result
+            if network_match["matched"]:
+                comm_name = network_match["community_name"]
+                result["is_scam"] = True
+                result["risk_score"] = max(result["risk_score"], 95)
+                result["confidence"] = max(result["confidence"], 0.98)
+
+                # Add a critical threat indicator at the top
+                result["threat_indicators"].insert(0, {
+                    "indicator": f"⚠️ FRAUD NETWORK MATCH: Entity linked to '{comm_name}'",
+                    "category": "fraud_network",
+                    "severity": "critical",
+                    "evidence": f"The {network_match['entity_type']} '{network_match['entity_value']}' was found in the active fraud intelligence network, linked to known syndicate: {comm_name}",
+                })
+
+                if "Report to cybercrime.gov.in" not in result.get("recommended_actions", []):
+                    result["recommended_actions"] = [
+                        "Do NOT transfer any money",
+                        "Disconnect the call immediately",
+                        "Report to cybercrime.gov.in",
+                        "Call 1930 (Cyber Crime Helpline)",
+                        "Block the caller's number",
+                    ]
+
+        except Exception as e:
+            logger.warning(f"Fraud network cross-check failed (non-fatal): {e}")
+
+        return network_match
+
+    def _build_network_match(self, node, entity_type: str, entity_value: str, community_names: dict) -> dict:
+        """Build a fraud network match result dict from a matched FraudNode."""
+        comm_id = node.community
+        comm_name = community_names.get(comm_id, "Unknown Syndicate") if comm_id is not None else "Active Scam Network"
+        return {
+            "matched": True,
+            "entity_type": entity_type,
+            "entity_value": entity_value,
+            "community_name": comm_name,
+            "node_label": node.label,
+            "risk_score": node.risk_score,
         }
