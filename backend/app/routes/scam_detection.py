@@ -19,7 +19,19 @@ from app.schemas.auth import MessageResponse
 from app.middleware.dependencies import get_current_user, require_roles
 from app.models.user import User
 from app.services.scam_detection_service import ScamDetectionService
-from app.services.audio_service import extract_text_from_audio
+
+try:
+    from app.services.audio_service import extract_text_from_audio
+except ImportError:
+    from loguru import logger
+    from fastapi import HTTPException, status
+    logger.warning("audio_service could not be imported. Audio upload transcription features are disabled.")
+    
+    async def extract_text_from_audio(file):
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Audio transcription service is currently disabled because the audio_service module or speech dependencies are missing."
+        )
 
 router = APIRouter(prefix="/scam", tags=["Digital Arrest Scam Detection"])
 

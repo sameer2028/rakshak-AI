@@ -8,7 +8,7 @@ export default function AnalysisResult({ result, language = 'en' }) {
   if (!result) return null;
 
   const { verdict, risk_score, confidence, reasons, matched_patterns, response_time_ms } = result;
-  
+
   // Determine color theme based on verdict
   const theme = {
     SCAM: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-400', icon: ShieldAlert },
@@ -28,13 +28,13 @@ export default function AnalysisResult({ result, language = 'en' }) {
         <div className="flex-shrink-0 relative z-10">
           <RiskMeter score={risk_score} size={140} strokeWidth={12} />
         </div>
-        
+
         <div className="flex-1 text-center md:text-left relative z-10">
           <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
             <HeaderIcon className={cn("w-6 h-6", theme.text)} />
             <h3 className="text-xl font-bold text-white tracking-wide">Analysis Complete</h3>
           </div>
-          
+
           <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
             <span className="text-gray-400 text-sm">Verdict:</span>
             <span className={cn("px-4 py-1.5 rounded-full text-sm font-semibold border", theme.bg, theme.border, theme.text)}>
@@ -52,6 +52,42 @@ export default function AnalysisResult({ result, language = 'en' }) {
           </div>
         </div>
       </div>
+
+      {/* Fraud Network Link Status */}
+      {result.fraud_network_match ? (
+        result.fraud_network_match.matched ? (
+          <div className="rounded-2xl border border-red-500/50 bg-red-950/20 p-5 flex items-start gap-4 shadow-glow-red relative overflow-hidden">
+            <div className="absolute -top-10 -left-10 w-24 h-24 rounded-full blur-[40px] bg-red-500 opacity-20" />
+            <ShieldAlert className="w-7 h-7 text-red-500 flex-shrink-0 mt-0.5 animate-pulse relative z-10" />
+            <div className="relative z-10">
+              <h4 className="text-base font-bold text-red-400 tracking-wide">Verified Cybercrime Link Detected</h4>
+              <p className="text-sm text-gray-200 mt-1.5 leading-relaxed">
+                The reported <strong className="capitalize">{result.fraud_network_match.entity_type}</strong> (<code className="text-red-300 font-mono bg-red-950/40 px-1.5 py-0.5 rounded border border-red-500/20">{result.fraud_network_match.entity_value}</code>) was found inside the intelligence database and is directly linked to the <strong className="text-white bg-red-500/20 px-2 py-0.5 rounded border border-red-500/30">{result.fraud_network_match.community_name}</strong>.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/10 p-5 flex items-start gap-4 relative overflow-hidden">
+            <CheckCircle2 className="w-7 h-7 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-base font-semibold text-emerald-400 tracking-wide">Fraud Network Grid Check</h4>
+              <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
+                No matching record found in active command center Fraud Networks.
+              </p>
+            </div>
+          </div>
+        )
+      ) : (
+        <div className="rounded-2xl border border-gray-800 bg-gray-900/10 p-5 flex items-start gap-4">
+          <Activity className="w-7 h-7 text-gray-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="text-base font-semibold text-gray-400 tracking-wide">Fraud Network Grid Check</h4>
+            <p className="text-sm text-gray-400 mt-1.5 leading-relaxed">
+              No matching record found in active command center Fraud Networks.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Reasons Panel */}

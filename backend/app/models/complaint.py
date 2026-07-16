@@ -74,6 +74,8 @@ class Complaint(Document):
     recommended_actions: List[str] = Field(default_factory=list)
     model_version: str = Field(default="v1.0")
     response_time_ms: Optional[int] = Field(default=None)
+    fraud_network_match: Optional[dict] = Field(default=None)
+
 
     # Location
     location: Optional[dict] = Field(

@@ -12,7 +12,17 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'source') {
+      setFormData(prev => ({
+        ...prev,
+        source: value,
+        email: (value === 'sms' || value === 'whatsapp') ? '' : prev.email,
+        phone_number: value === 'email' ? '' : prev.phone_number,
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -23,8 +33,8 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Source Selection */}
-      <div className="grid grid-cols-4 gap-3">
-        {['sms', 'whatsapp', 'call', 'email'].map((source) => (
+      <div className="grid grid-cols-3 gap-3">
+        {['sms', 'whatsapp', 'email'].map((source) => (
           <label
             key={source}
             className={cn(
@@ -67,22 +77,24 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Phone Number */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">
-            Sender Phone Number
-          </label>
-          <div className="relative">
-            <Phone className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
-            <input
-              type="text"
-              name="phone_number"
-              value={formData.phone_number}
-              onChange={handleChange}
-              className="block w-full pl-10 pr-3 py-2.5 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              placeholder="+91 98765 43210"
-            />
+        {formData.source !== 'email' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Sender Phone Number
+            </label>
+            <div className="relative">
+              <Phone className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
+              <input
+                type="text"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+                className="block w-full pl-10 pr-3 py-2.5 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                placeholder="+91 98765 43210"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* UPI ID */}
         <div>
@@ -103,22 +115,24 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
         </div>
 
         {/* Email */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">
-            Sender Email
-          </label>
-          <div className="relative">
-            <Mail className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="block w-full pl-10 pr-3 py-2.5 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              placeholder="sender@suspicious-domain.com"
-            />
+        {formData.source === 'email' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Sender Email
+            </label>
+            <div className="relative">
+              <Mail className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="block w-full pl-10 pr-3 py-2.5 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                placeholder="sender@suspicious-domain.com"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <button
@@ -141,3 +155,4 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
     </form>
   );
 }
+

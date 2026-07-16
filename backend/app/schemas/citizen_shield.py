@@ -26,6 +26,14 @@ class FraudCheckRequest(BaseModel):
 
 # ─── Responses ───────────────────────────────────────────────────
 
+class FraudNetworkMatch(BaseModel):
+    """Result of checking reported entities in the fraud network graph."""
+    matched: bool = False
+    entity_type: Optional[str] = None  # "phone" | "upi" | "email"
+    entity_value: Optional[str] = None
+    community_name: Optional[str] = None
+
+
 class FraudCheckResponse(BaseModel):
     """AI analysis result for a fraud check."""
     report_id: str
@@ -36,6 +44,8 @@ class FraudCheckResponse(BaseModel):
     matched_patterns: List[str]
     response_time_ms: int
     analyzed_at: datetime
+    fraud_network_match: Optional[FraudNetworkMatch] = None
+
 
 
 class FraudReportSummary(BaseModel):
