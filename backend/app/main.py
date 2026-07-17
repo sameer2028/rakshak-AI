@@ -20,7 +20,6 @@ from app.middleware.request_logging import RequestLoggingMiddleware
 from app.routes import api_router
 from app.ml.fraud_classifier import fraud_classifier
 from app.ml.scam_nlp import nlp_engine
-from app.ml.counterfeit_detector import counterfeit_detector
 
 
 @asynccontextmanager
@@ -36,7 +35,6 @@ async def lifespan(app: FastAPI):
     # Load ML Models
     fraud_classifier.load_model()
     nlp_engine.load_model()
-    counterfeit_detector.load_model()
 
     logger.info("🚀 Rakshak AI is ready!")
     logger.info(f"   API Docs: http://localhost:8000/docs")
