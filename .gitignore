@@ -92,4 +92,7 @@ test_request.py
 main.py
 backend/test_model.py
 v e n v /  
+ b a c k e n d / a p p / m l / m o d e l s / * . p t h  
+ b a c k e n d / a p p / m l / m o d e l s / * . p t h  
  
+*.pth
