@@ -40,7 +40,7 @@ export default function RegisterPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 animate-fade-in">
         <div className="flex justify-center">
           <div className="w-16 h-16 flex items-center justify-center">
-            <img src="/favicon.svg" alt="Rakshak AI Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,229,255,0.5)]" />
+            <img src="/favicon.svg?v=2" alt="Rakshak AI Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,229,255,0.5)]" />
           </div>
         </div>
         <h2 className="mt-4 text-center text-3xl font-extrabold text-white tracking-tight">
