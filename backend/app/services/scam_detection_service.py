@@ -24,6 +24,7 @@ from app.schemas.auth import MessageResponse
 from app.middleware.exceptions import NotFoundException
 from app.ml.scam_nlp import nlp_engine
 from app.services.websocket_service import websocket_manager
+from app.services.graph_auto_expander import graph_expander
 from loguru import logger
 
 
@@ -83,6 +84,16 @@ class ScamDetectionService:
                 await websocket_manager.broadcast(alert_data)
             except Exception as e:
                 logger.error(f"Failed to broadcast websocket alert: {e}")
+
+        # ─── Auto-expand fraud graph ─────────────────────────────────
+        try:
+            await graph_expander.expand_from_complaint(
+                complaint=complaint,
+                reporter_name=user.name if hasattr(user, 'name') else "Unknown",
+                reporter_id=str(user.id) if hasattr(user, 'id') else "system",
+            )
+        except Exception as e:
+            logger.error(f"Graph auto-expansion failed (non-fatal): {e}")
 
         return ScamAnalyzeResponse(
             detection_id=str(complaint.id),

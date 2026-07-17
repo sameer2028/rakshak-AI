@@ -36,8 +36,17 @@ class FraudClassifier:
         message_length = len(message)
         
         msg_lower = message.lower()
-        urgency_count = sum(1 for w in ["urgent", "immediate", "suspended", "block", "arrest"] if w in msg_lower)
-        money_count = sum(1 for w in ["rs", "inr", "amount", "prize", "lottery", "cash"] if w in msg_lower)
+        urgency_count = sum(1 for w in ["urgent", "immediate", "suspended", "block", "arrest", "freeze", "blocked", "deactivated"] if w in msg_lower)
+        money_count = sum(1 for w in ["rs", "inr", "amount", "prize", "lottery", "cash", "lakh", "crore"] if w in msg_lower)
+        
+        # Robust social engineering detection using regex for phrases separated by up to 2 words
+        import re
+        soc_eng_patterns = [
+            r"(send|share|give|tell).*?(otp|pin|password|cvv)",
+            r"(from|calling).*?(bank|rbi|police|cbi|customs)",
+            r"(account|card).*?(blocked|suspended|frozen)"
+        ]
+        social_eng_count = sum(len(re.findall(p, msg_lower)) for p in soc_eng_patterns)
         
         # Phone features
         phone = features.get("phone_number") or ""
@@ -52,8 +61,7 @@ class FraudClassifier:
             except ValueError:
                 phone_prefix = 0
                 
-        # If no phone number is provided, default to a safe prefix (600-999) 
-        # so the model relies on text features instead of anomalyizing a 0.
+        # If no phone number is provided, default to a safe prefix
         if phone_prefix == 0:
             phone_prefix = 999
         
@@ -62,7 +70,7 @@ class FraudClassifier:
             
         # UPI features
         upi = features.get("upi_id") or ""
-        upi_domain = 0 # Default safe domain for simplicity
+        upi_domain = 0
         
         # Construct DataFrame in exactly the format expected by the pipeline
         data = {
@@ -72,7 +80,8 @@ class FraudClassifier:
             "upi_domain": [upi_domain],
             "message_length": [message_length],
             "urgency_word_count": [urgency_count],
-            "money_word_count": [money_count]
+            "money_word_count": [money_count],
+            "social_eng_count": [social_eng_count],
         }
         return pd.DataFrame(data)
 
@@ -91,8 +100,13 @@ class FraudClassifier:
             
         try:
             df = self._extract_features(features)
-            # Pipeline predict_proba returns probabilities for [SAFE, SUSPICIOUS, SCAM]
-            probs = self.model.predict_proba(df)[0]
+            
+            # Use separated preprocessor and classifier to avoid sklearn pipeline bugs
+            preprocessor = self.model["preprocessor"]
+            classifier = self.model["classifier"]
+            
+            X_processed = preprocessor.transform(df)
+            probs = classifier.predict_proba(X_processed)[0]
             
             safe_prob = float(probs[0])
             susp_prob = float(probs[1])

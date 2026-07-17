@@ -22,6 +22,7 @@ from app.schemas.citizen_shield import (
 from app.middleware.exceptions import NotFoundException
 from app.ml.fraud_classifier import fraud_classifier
 from app.services.websocket_service import websocket_manager
+from app.services.graph_auto_expander import graph_expander
 from loguru import logger
 
 
@@ -179,6 +180,16 @@ class CitizenShieldService:
                 await websocket_manager.broadcast(alert_data)
             except Exception as e:
                 logger.error(f"Failed to broadcast websocket alert: {e}")
+
+        # ─── Auto-expand fraud graph with new nodes/edges ──────────────
+        try:
+            await graph_expander.expand_from_complaint(
+                complaint=complaint,
+                reporter_name=user.name,
+                reporter_id=str(user.id),
+            )
+        except Exception as e:
+            logger.error(f"Graph auto-expansion failed (non-fatal): {e}")
 
         return FraudCheckResponse(
             report_id=str(complaint.id),
