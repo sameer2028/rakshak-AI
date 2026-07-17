@@ -68,11 +68,11 @@ class DashboardService:
 
         # Scams this week vs last week
         scams_this_week = await Complaint.find(
-            Complaint.verdict.is_in([VerdictType.SCAM, VerdictType.SUSPICIOUS]),
+            {"verdict": {"$in": ["scam", "suspicious"]}},
             Complaint.created_at >= one_week_ago,
         ).count()
         scams_last_week = await Complaint.find(
-            Complaint.verdict.is_in([VerdictType.SCAM, VerdictType.SUSPICIOUS]),
+            {"verdict": {"$in": ["scam", "suspicious"]}},
             Complaint.created_at >= two_weeks_ago,
             Complaint.created_at < one_week_ago,
         ).count()
