@@ -1,9 +1,12 @@
 import useAuthStore from '../../store/authStore';
 import { Bell, Search } from 'lucide-react';
 import { APP_NAME } from '../../constants/config';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
 
 export default function Header() {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   return (
     <header className="h-16 border-b border-gray-800/50 bg-surface-primary/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">
@@ -29,7 +32,10 @@ export default function Header() {
         </div>
 
         {/* Notifications Bell */}
-        <button className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all">
+        <button 
+          onClick={() => navigate(ROUTES.ALERTS)}
+          className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
             3
