@@ -5,6 +5,7 @@ import NetworkGraph from './NetworkGraph';
 import GraphControls from './GraphControls';
 import NodeDetail from './NodeDetail';
 import CommunitiesPanel from './CommunitiesPanel';
+import AnalysisResultPanel from './AnalysisResultPanel';
 import { fraudNetworkApi } from '../../api/fraud-network.api';
 import { useToastStore } from '../../store/toastStore';
 import { cn } from '../../lib/utils';
@@ -19,6 +20,7 @@ export default function FraudNetworkPage() {
   const [error, setError] = useState(null);
   const [activeFilters, setActiveFilters] = useState({ communityId: null, nodeType: null });
   const [activeTab, setActiveTab] = useState('controls'); // 'controls' | 'communities'
+  const [analysisResult, setAnalysisResult] = useState(null);
   
   const graphRef = useRef(null);
 
@@ -55,9 +57,10 @@ export default function FraudNetworkPage() {
 
   const handleAnalyze = async (algorithm) => {
     setIsLoading(true);
+    setAnalysisResult(null);
     try {
       const response = await fraudNetworkApi.analyze({ algorithm });
-      addToast(`Analysis complete: ${response.data.results?.message || ''}`, 'success');
+      setAnalysisResult(response.data);
       loadGraph();
     } catch (err) {
       addToast('Analysis failed', 'error');
@@ -259,6 +262,11 @@ export default function FraudNetworkPage() {
               onNodeClick={handleNodeClick} 
               graphRef={graphRef}
             />
+          )}
+
+          {/* Analysis Result Overlay */}
+          {analysisResult && (
+            <AnalysisResultPanel result={analysisResult} onClose={() => setAnalysisResult(null)} />
           )}
 
           {/* Node Detail Slide-over Panel */}

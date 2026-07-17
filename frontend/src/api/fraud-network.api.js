@@ -9,6 +9,6 @@ export const fraudNetworkApi = {
   },
   getNode: (nodeId) => api.get(`/network/node/${nodeId}`),
   search: (data) => api.post('/network/search', data),
-  analyze: (data) => api.post('/network/analyze', data),
+  analyze: (data) => api.post('/network/analyze', data, { timeout: 60000 }),
   getCommunities: () => api.get('/network/communities'),
 };

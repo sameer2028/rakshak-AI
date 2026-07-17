@@ -168,45 +168,85 @@ class FraudNetworkService:
         results = {"algorithm": request.algorithm}
         updated = 0
         
-        # 3. Run algorithm and update DB
+        # Build a lookup from node_id -> mongo _id for bulk updates
+        node_id_map = {n.node_id: n.id for n in db_nodes}
+        
+        # 3. Run algorithm and prepare bulk updates
+        from pymongo import UpdateOne
+        bulk_ops = []
+        
         if request.algorithm == "louvain":
             res = graph_analyzer.run_louvain()
             communities = res.get("communities", {})
+            # Group nodes by community
+            community_groups = {}
             for node in db_nodes:
                 if node.node_id in communities:
-                    node.community = communities[node.node_id]
-                    await node.save()
+                    cid = communities[node.node_id]
+                    bulk_ops.append(UpdateOne(
+                        {"_id": node_id_map[node.node_id]},
+                        {"$set": {"community": cid}}
+                    ))
                     updated += 1
-            results["message"] = f"Detected communities for {updated} nodes."
+                    community_groups.setdefault(cid, []).append(node.label)
+            num_communities = len(community_groups)
+            results["message"] = f"Detected {num_communities} communities across {updated} nodes."
+            results["communities"] = [
+                {"id": cid, "members": members[:5], "size": len(members)}
+                for cid, members in sorted(community_groups.items())
+            ]
             
         elif request.algorithm == "pagerank":
             res = graph_analyzer.run_pagerank()
             scores = res.get("scores", {})
             leaders = graph_analyzer.detect_ring_leaders()
+            node_label_map = {n.node_id: n.label for n in db_nodes}
             
             for node in db_nodes:
                 if node.node_id in scores:
-                    node.pagerank = scores[node.node_id]
-                    node.is_ring_leader = node.node_id in leaders
-                    await node.save()
+                    bulk_ops.append(UpdateOne(
+                        {"_id": node_id_map[node.node_id]},
+                        {"$set": {
+                            "pagerank": scores[node.node_id],
+                            "is_ring_leader": node.node_id in leaders,
+                        }}
+                    ))
                     updated += 1
             results["message"] = f"Calculated PageRank. Found {len(leaders)} ring leaders."
+            results["entities"] = [
+                {"name": node_label_map.get(lid, lid), "score": round(scores.get(lid, 0), 4)}
+                for lid in sorted(leaders, key=lambda x: scores.get(x, 0), reverse=True)
+            ][:10]
             
         elif request.algorithm == "centrality":
             res = graph_analyzer.run_betweenness_centrality()
             scores = res.get("scores", {})
             mules = graph_analyzer.detect_money_mules()
+            node_label_map = {n.node_id: n.label for n in db_nodes}
             
             for node in db_nodes:
                 if node.node_id in scores:
-                    node.degree_centrality = scores[node.node_id]  # using field for centrality
-                    node.is_money_mule = node.node_id in mules
-                    await node.save()
+                    bulk_ops.append(UpdateOne(
+                        {"_id": node_id_map[node.node_id]},
+                        {"$set": {
+                            "degree_centrality": scores[node.node_id],
+                            "is_money_mule": node.node_id in mules,
+                        }}
+                    ))
                     updated += 1
             results["message"] = f"Calculated Centrality. Found {len(mules)} suspected money mules."
+            results["entities"] = [
+                {"name": node_label_map.get(mid, mid), "score": round(scores.get(mid, 0), 4)}
+                for mid in sorted(mules, key=lambda x: scores.get(x, 0), reverse=True)
+            ][:10]
         
         else:
             results["message"] = f"Unknown algorithm: {request.algorithm}"
+
+        # 4. Execute all DB updates in a single bulk operation
+        if bulk_ops:
+            collection = FraudNode.get_motor_collection()
+            await collection.bulk_write(bulk_ops)
 
         execution_time_ms = int((time.time() - start_time) * 1000)
 
