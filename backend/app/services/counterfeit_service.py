@@ -25,14 +25,9 @@ from app.schemas.counterfeit import (
 from app.middleware.exceptions import NotFoundException, ValidationException
 from app.config.settings import settings
 
-# Import the new currency_ai pipeline components
-from app.ml.currency_ai.quality import assess_image_quality
-from app.ml.currency_ai.preprocessing import apply_preprocessing_filters
-from app.ml.currency_ai.detector import detect_security_features
-from app.ml.currency_ai.ocr import extract_banknote_text
-from app.ml.currency_ai.classifier import classify_note
-from app.ml.currency_ai.decision import evaluate_verdict
-from app.ml.currency_ai.explainability import generate_grad_cam_overlay
+# We lazy-load the new currency_ai pipeline components to prevent heavy 
+# PyTorch/ML libraries from consuming RAM on lightweight core APIs (like Render).
+# See `detect` method for lazy imports.
 
 from app.models.alert import Alert, AlertType, AlertSeverity
 from app.services.websocket_service import websocket_manager
@@ -65,36 +60,74 @@ class CounterfeitService:
         with open(filepath, "wb") as f:
             f.write(content)
 
-        # --- New Currency.AI Pipeline ---
-        # 1. Quality
-        quality_report = assess_image_quality(content)
-        
-        # 2. Preprocessing
-        preprocessed_images = apply_preprocessing_filters(content)
-        
-        # Init vars
+        # --- New Currency.AI Pipeline (External vs Local) ---
         denom_val = denomination or 500
-        yolo_detections = []
-        ocr_results = {
-            "serial_number": None,
-            "serial_number_valid": False,
-            "rbi_text_detected": False,
-            "rbi_text": None,
-            "governor_signature_detected": False,
-            "denomination_text": None,
-            "denomination_match": False
-        }
-        classification = {"real_probability": 0.0, "fake_probability": 1.0}
         
-        if quality_report["is_valid"]:
-            yolo_detections = detect_security_features(content, denom_val)
-            ocr_results = extract_banknote_text(content, denom_val)
-            classification = classify_note(content, yolo_detections, ocr_results)
-            decision = evaluate_verdict(quality_report, yolo_detections, ocr_results, classification)
-            grad_cam_heatmap = generate_grad_cam_overlay(content, yolo_detections)
+        if settings.HF_ML_URL:
+            # External Microservice Mode (Hugging Face)
+            logger.info(f"Forwarding image to external ML microservice: {settings.HF_ML_URL}")
+            import httpx
+            import base64
+            
+            b64_img = base64.b64encode(content).decode('utf-8')
+            # Hugging face gradio REST endpoints format: /run/predict
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                try:
+                    resp = await client.post(
+                        f"{settings.HF_ML_URL.rstrip('/')}/api/predict",
+                        json={"data": [f"data:image/jpeg;base64,{b64_img}", denom_val]}
+                    )
+                    resp.raise_for_status()
+                    ml_data = resp.json()["data"][0]
+                    
+                    quality_report = ml_data["quality_report"]
+                    preprocessed_images = ml_data["preprocessed_images"]
+                    yolo_detections = ml_data["yolo_detections"]
+                    ocr_results = ml_data["ocr_results"]
+                    decision = ml_data["decision"]
+                    grad_cam_heatmap = ml_data["grad_cam_heatmap"]
+                except Exception as e:
+                    logger.error(f"External ML Microservice failed: {str(e)}")
+                    raise ValidationException(f"Failed to process image via external ML service: {str(e)}")
         else:
-            decision = evaluate_verdict(quality_report, yolo_detections, ocr_results, classification)
-            grad_cam_heatmap = preprocessed_images.get("original", "")
+            # Local ML Mode (Lazy Load to save RAM)
+            logger.info("Using LOCAL ML model execution.")
+            from app.ml.currency_ai.quality import assess_image_quality
+            from app.ml.currency_ai.preprocessing import apply_preprocessing_filters
+            from app.ml.currency_ai.detector import detect_security_features
+            from app.ml.currency_ai.ocr import extract_banknote_text
+            from app.ml.currency_ai.classifier import classify_note
+            from app.ml.currency_ai.decision import evaluate_verdict
+            from app.ml.currency_ai.explainability import generate_grad_cam_overlay
+
+            # 1. Quality
+            quality_report = assess_image_quality(content)
+            
+            # 2. Preprocessing
+            preprocessed_images = apply_preprocessing_filters(content)
+            
+            # Init vars
+            yolo_detections = []
+            ocr_results = {
+                "serial_number": None,
+                "serial_number_valid": False,
+                "rbi_text_detected": False,
+                "rbi_text": None,
+                "governor_signature_detected": False,
+                "denomination_text": None,
+                "denomination_match": False
+            }
+            classification = {"real_probability": 0.0, "fake_probability": 1.0}
+            
+            if quality_report["is_valid"]:
+                yolo_detections = detect_security_features(content, denom_val)
+                ocr_results = extract_banknote_text(content, denom_val)
+                classification = classify_note(content, yolo_detections, ocr_results)
+                decision = evaluate_verdict(quality_report, yolo_detections, ocr_results, classification)
+                grad_cam_heatmap = generate_grad_cam_overlay(content, yolo_detections)
+            else:
+                decision = evaluate_verdict(quality_report, yolo_detections, ocr_results, classification)
+                grad_cam_heatmap = preprocessed_images.get("original", "")
 
         # Convert decision to enum for our legacy CurrencyCheck history
         verdict_enum = CurrencyVerdict.GENUINE if decision["is_genuine"] else CurrencyVerdict.COUNTERFEIT

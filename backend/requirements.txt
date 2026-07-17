@@ -23,10 +23,7 @@ joblib==1.4.2
 numpy==2.2.1
 pandas==2.2.3
 
-# ML - NLP
-transformers==4.47.1
-torch>=2.0.0
-torchvision>=0.15.0
+# ML - NLP (Heavy libraries removed for Render compatibility)
 
 # ML - Graph
 networkx==3.4.2
@@ -44,9 +41,9 @@ SpeechRecognition==3.17.0
 
 # ── CC Counterfeit Currency Detection Pipeline (added) ─────────────────────
 # YOLOv11 security feature detection (falls back to CV engine if model not present)
-ultralytics>=8.1.24
+# ultralytics>=8.1.24
 # EasyOCR serial number + text extraction (falls back to simulation if unavailable)
-easyocr>=1.7.1
+# easyocr>=1.7.1
 # Grad-CAM heatmap rendering
 matplotlib>=3.8.3
 # Image augmentation (used by ultralytics internally)
