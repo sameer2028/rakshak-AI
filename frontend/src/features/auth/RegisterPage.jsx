@@ -32,18 +32,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-primary flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-surface-primary flex flex-col justify-center py-6 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 animate-fade-in">
         <div className="flex justify-center">
-          <div className="w-20 h-20 flex items-center justify-center">
+          <div className="w-16 h-16 flex items-center justify-center">
             <img src="/favicon.svg" alt="Rakshak AI Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,229,255,0.5)]" />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
+        <h2 className="mt-4 text-center text-3xl font-extrabold text-white tracking-tight">
           Create Account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-400 uppercase tracking-widest">
@@ -51,9 +51,9 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 animate-slide-up">
-        <div className="glass-card py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-700/50">
-          <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md relative z-10 animate-slide-up">
+        <div className="glass-card py-6 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-700/50">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium text-gray-300">Full Name</label>
               <div className="mt-1 relative rounded-md shadow-sm">
@@ -183,7 +183,7 @@ export default function RegisterPage() {
             </div>
           </form>
 
-          <div className="mt-6 text-center text-sm">
+          <div className="mt-4 text-center text-sm">
             <span className="text-gray-400">Already have an account? </span>
             <Link to={ROUTES.LOGIN} className="font-medium text-purple-400 hover:text-purple-300">
               Sign in
