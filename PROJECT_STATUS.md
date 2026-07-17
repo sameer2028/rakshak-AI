@@ -7,7 +7,7 @@
 **Project**: Rakshak AI Intelligence Grid
 **What**: AI-Powered Digital Public Safety Intelligence Platform
 **Goal**: Shift law enforcement from Reactive Investigation → Predictive Threat Neutralization
-**Current State**: Phase 1 COMPLETE. Phase 2 (Frontend Scaffold) is NEXT.
+**Current State**: Phases 1 through 9 are largely COMPLETE ✅. Phase 10 (Seed Data + Polish) is NEXT.
 **Frontend Language**: JavaScript (NOT TypeScript)
 
 ---
@@ -198,16 +198,16 @@ PATCH  /api/dashboard/alerts/{id}/resolve  # police, admin
 | `crime_hotspots` | district, state, coordinates, fraud_count, risk_level, risk_score | state, district, risk_level, coordinates (2dsphere) |
 | `alerts` | alert_type, severity, title, description, source_module, is_read, is_resolved | alert_type, severity, is_read, is_resolved, created_at |
 
-### What's Placeholder (Needs ML Integration Later)
+### ML Models Integration Status
 
-Services use **placeholder analysis** that will be replaced with real ML models:
+Services use real ML models or advanced implementations:
 
-| Service | Placeholder Logic | Future ML Model |
+| Service | Logic Status | Future Advanced Models |
 |---|---|---|
-| `citizen_shield_service.py` | Keyword matching on scam phrases | XGBoost classifier |
-| `scam_detection_service.py` | Regex pattern matching for CBI/ED/Customs | TF-IDF + LogReg / IndicBERT |
-| `fraud_network_service.py` | Direct MongoDB queries (no algorithms) | NetworkX Louvain/PageRank/Centrality |
-| `counterfeit_service.py` | Random confidence + random feature checks | OpenCV + ResNet50 transfer learning |
+| `citizen_shield_service.py` | Integrated with XGBoost `fraud_classifier.py` | Deep Learning |
+| `scam_detection_service.py` | Integrated with `scam_nlp.py` | IndicBERT |
+| `fraud_network_service.py` | Integrated with `graph_analyzer.py` (NetworkX) | GraphSAGE |
+| `counterfeit_service.py` | Integrated with `counterfeit_detector.py` | YOLO / ViT |
 
 ### How to Run Backend
 
@@ -223,7 +223,7 @@ Requires MongoDB running on `localhost:27017`. API docs at `http://localhost:800
 
 ---
 
-# PHASE 2 — FRONTEND SCAFFOLD (NEXT) 🔜
+# PHASE 2 — FRONTEND SCAFFOLD — COMPLETED ✅
 
 ## Goal
 Set up the complete React/TypeScript frontend with routing, auth, and app shell.
@@ -383,7 +383,7 @@ api.interceptors.request.use((config) => {
 
 ---
 
-# PHASE 3 — FRONTEND MODULE PAGES 🔜
+# PHASE 3 — FRONTEND MODULE PAGES — COMPLETED ✅
 
 ## Goal
 Build all 6 feature pages connecting to backend APIs.
@@ -447,7 +447,7 @@ Build all 6 feature pages connecting to backend APIs.
 
 ---
 
-# PHASE 4 — ML: FRAUD CLASSIFIER
+# PHASE 4 — ML: FRAUD CLASSIFIER — COMPLETED ✅
 
 ## Goal
 Train and integrate XGBoost fraud classifier into `citizen_shield_service.py`.
@@ -486,7 +486,7 @@ Output: [SCAM, SAFE, SUSPICIOUS] + probability
 
 ---
 
-# PHASE 5 — ML: SCAM NLP ENGINE
+# PHASE 5 — ML: SCAM NLP ENGINE — COMPLETED ✅
 
 ## Goal
 Train TF-IDF + Logistic Regression scam classifier for transcript analysis.
@@ -515,7 +515,7 @@ Classes: [fake_cbi, fake_ed, fake_customs, digital_arrest, video_scam, safe]
 
 ---
 
-# PHASE 6 — ML: GRAPH INTELLIGENCE
+# PHASE 6 — ML: GRAPH INTELLIGENCE — COMPLETED ✅
 
 ## Goal
 Implement NetworkX graph algorithms in `graph_analyzer.py` and integrate into `fraud_network_service.py`.
@@ -555,7 +555,7 @@ betweenness = nx.betweenness_centrality(G)
 
 ---
 
-# PHASE 7 — GEOSPATIAL PIPELINE
+# PHASE 7 — GEOSPATIAL PIPELINE — COMPLETED ✅
 
 ## Goal
 Build aggregation pipeline for crime heatmap data.
@@ -569,7 +569,7 @@ Build aggregation pipeline for crime heatmap data.
 
 ---
 
-# PHASE 8 — ML: COUNTERFEIT DETECTOR
+# PHASE 8 — ML: COUNTERFEIT DETECTOR — COMPLETED ✅
 
 ## Goal
 Build OpenCV + ResNet50 counterfeit currency detector.
@@ -593,7 +593,7 @@ Build OpenCV + ResNet50 counterfeit currency detector.
 
 ---
 
-# PHASE 9 — POLICE COMMAND CENTER INTEGRATION
+# PHASE 9 — POLICE COMMAND CENTER INTEGRATION — COMPLETED ✅
 
 ## Goal
 Wire up live dashboard with real-time data from all modules.
@@ -610,7 +610,7 @@ Wire up live dashboard with real-time data from all modules.
 
 ---
 
-# PHASE 10 — SEED DATA + POLISH
+# PHASE 10 — SEED DATA + POLISH (NEXT) 🔜
 
 ## Goal
 Generate realistic demo data and polish everything.
