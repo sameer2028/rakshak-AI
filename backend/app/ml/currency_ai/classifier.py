@@ -1,4 +1,3 @@
-import torch
 import cv2
 import numpy as np
 import logging
@@ -6,18 +5,18 @@ from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
-# Try to load PyTorch classifier
+# Try to load PyTorch classifier (optional - not available on Render free tier)
 classifier_available = False
 classifier_model = None
 
 try:
-    # Optional PyTorch loading
+    import torch
     import torchvision.models as models
     # We would define the model architecture here (e.g. EfficientNetV2)
     # class CurrencyEfficientNet(torch.nn.Module): ...
     classifier_available = False  # Keep false until weights exist
-except Exception as e:
-    logger.warning(f"PyTorch classifier setup skipped ({e}). Fallback classification active.")
+except ImportError:
+    logger.warning("PyTorch not available. Using fallback classification (OpenCV + heuristics).")
 
 def classify_note(img_bytes: bytes, yolo_detections: list, ocr_results: dict) -> dict:
     """
