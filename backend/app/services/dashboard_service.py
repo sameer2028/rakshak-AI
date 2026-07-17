@@ -15,6 +15,7 @@ from app.models.alert import Alert
 from app.models.user import User
 from app.schemas.dashboard import (
     DashboardOverview,
+    TrendInfo,
     AlertItem,
     AlertsResponse,
     HighRiskAccount,
@@ -27,6 +28,14 @@ from app.schemas.auth import MessageResponse
 from app.middleware.exceptions import NotFoundException
 from typing import Optional
 from loguru import logger
+
+
+def _compute_trend(current: int, previous: int) -> TrendInfo:
+    """Compute week-over-week percentage change."""
+    if previous == 0:
+        return TrendInfo(value=0 if current == 0 else 100, is_positive=current > 0)
+    pct = int(round(((current - previous) / previous) * 100))
+    return TrendInfo(value=abs(pct), is_positive=pct >= 0)
 
 
 class DashboardService:
@@ -52,13 +61,58 @@ class DashboardService:
             CurrencyCheck.prediction == CurrencyVerdict.COUNTERFEIT
         ).count()
 
+        # --- Week-over-week trend computation ---
+        today = datetime.now(timezone.utc)
+        one_week_ago = today - timedelta(days=7)
+        two_weeks_ago = today - timedelta(days=14)
+
+        # Scams this week vs last week
+        scams_this_week = await Complaint.find(
+            Complaint.verdict.is_in([VerdictType.SCAM, VerdictType.SUSPICIOUS]),
+            Complaint.created_at >= one_week_ago,
+        ).count()
+        scams_last_week = await Complaint.find(
+            Complaint.verdict.is_in([VerdictType.SCAM, VerdictType.SUSPICIOUS]),
+            Complaint.created_at >= two_weeks_ago,
+            Complaint.created_at < one_week_ago,
+        ).count()
+        scams_trend = _compute_trend(scams_this_week, scams_last_week)
+
+        # Fraud rings trend (compare node count growth)
+        nodes_this_week = await FraudNode.find(FraudNode.created_at >= one_week_ago).count()
+        nodes_last_week = await FraudNode.find(
+            FraudNode.created_at >= two_weeks_ago,
+            FraudNode.created_at < one_week_ago,
+        ).count()
+        fraud_rings_trend = _compute_trend(nodes_this_week, nodes_last_week)
+
+        # Hotspots trend
+        hotspots_this_week = await CrimeHotspot.find(
+            {"risk_level": {"$in": ["high", "critical"]}, "created_at": {"$gte": one_week_ago}}
+        ).count()
+        hotspots_last_week = await CrimeHotspot.find(
+            {"risk_level": {"$in": ["high", "critical"]}, "created_at": {"$gte": two_weeks_ago, "$lt": one_week_ago}}
+        ).count()
+        hotspots_trend = _compute_trend(hotspots_this_week, hotspots_last_week)
+
+        # Counterfeit trend
+        cc_this_week = await CurrencyCheck.find(
+            CurrencyCheck.prediction == CurrencyVerdict.COUNTERFEIT,
+            CurrencyCheck.created_at >= one_week_ago,
+        ).count()
+        cc_last_week = await CurrencyCheck.find(
+            CurrencyCheck.prediction == CurrencyVerdict.COUNTERFEIT,
+            CurrencyCheck.created_at >= two_weeks_ago,
+            CurrencyCheck.created_at < one_week_ago,
+        ).count()
+        counterfeit_trend = _compute_trend(cc_this_week, cc_last_week)
+
         # Total amount saved (from blocked scams)
         scam_complaints = await Complaint.find(Complaint.verdict == VerdictType.SCAM).to_list()
         total_saved = sum(c.amount_lost or 0 for c in scam_complaints)
 
         # Calculate 7-day trend data
-        today = datetime.now(timezone.utc)
-        seven_days_ago = today - timedelta(days=6) # 7 days including today
+        seven_days_ago = today - timedelta(days=6)  # 7 days including today
         
         recent_complaints = await Complaint.find(Complaint.created_at >= seven_days_ago).to_list()
         
@@ -126,6 +180,10 @@ class DashboardService:
                 "fraud_rings_last_7_days": [],
                 "complaints_last_7_days": [],
             },
+            scams_trend=scams_trend,
+            fraud_rings_trend=fraud_rings_trend,
+            hotspots_trend=hotspots_trend,
+            counterfeit_trend=counterfeit_trend,
             last_updated=datetime.now(timezone.utc),
         )
 

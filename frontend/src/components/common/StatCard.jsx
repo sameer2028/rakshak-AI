@@ -17,8 +17,8 @@ export default function StatCard({ title, value, icon: Icon, trend, colorClass }
       
       {trend && (
         <div className="flex items-center gap-2 mt-4 text-sm">
-          <span className={cn('font-medium', trend.isPositive ? 'text-emerald-400' : 'text-red-400')}>
-            {trend.isPositive ? '↑' : '↓'} {trend.value}%
+          <span className={cn('font-medium', (trend.isPositive ?? trend.is_positive) ? 'text-emerald-400' : 'text-red-400')}>
+            {(trend.isPositive ?? trend.is_positive) ? '↑' : '↓'} {trend.value}%
           </span>
           <span className="text-gray-500">vs last week</span>
         </div>

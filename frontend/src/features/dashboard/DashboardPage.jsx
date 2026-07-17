@@ -6,6 +6,7 @@ import HighRiskAccounts from './HighRiskAccounts';
 import { Shield, ShieldAlert, PhoneOff, AlertTriangle, Network, MapPin } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { dashboardApi } from '../../api/dashboard.api';
+import { API_BASE_URL } from '../../constants/config';
 
 
 export default function DashboardPage() {
@@ -45,8 +46,8 @@ export default function DashboardPage() {
 
   // WebSocket for Live Alerts
   useEffect(() => {
-    // Note: In production this should use the dynamic API_BASE_URL
-    const wsUrl = 'ws://localhost:8000/api/dashboard/ws/alerts';
+    const wsBase = API_BASE_URL.replace(/^http/, 'ws');
+    const wsUrl = `${wsBase}/dashboard/ws/alerts`;
     const ws = new WebSocket(wsUrl);
 
     ws.onmessage = (event) => {
@@ -108,27 +109,28 @@ export default function DashboardPage() {
           value={data.overview.total_scams_blocked?.toLocaleString() || "0"}
           icon={ShieldAlert}
           colorClass="text-emerald-400"
-          trend={{ value: 12, isPositive: true }}
+          trend={data.overview.scams_trend}
         />
         <StatCard
           title="Active Fraud Rings"
           value={data.overview.active_fraud_rings?.toString() || "0"}
           icon={Network}
           colorClass="text-purple-400"
-          trend={{ value: 5, isPositive: false }}
+          trend={data.overview.fraud_rings_trend}
         />
         <StatCard
           title="Critical Hotspots"
           value={data.overview.critical_hotspots?.toString() || "0"}
           icon={MapPin}
           colorClass="text-red-400"
+          trend={data.overview.hotspots_trend}
         />
         <StatCard
           title="Counterfeit Reports"
           value={data.overview.counterfeit_detected?.toString() || "0"}
           icon={AlertTriangle}
           colorClass="text-orange-400"
-          trend={{ value: 2, isPositive: false }}
+          trend={data.overview.counterfeit_trend}
         />
       </div>
 

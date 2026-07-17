@@ -19,6 +19,12 @@ class TopCommunity(BaseModel):
     main_type: str
 
 
+class TrendInfo(BaseModel):
+    """Week-over-week trend for a stat card."""
+    value: int = Field(default=0, description="Percentage change vs last week")
+    is_positive: bool = Field(default=True, description="True if trending upward")
+
+
 class DashboardOverview(BaseModel):
     """Command Center summary statistics."""
     total_scams_detected: int
@@ -32,6 +38,10 @@ class DashboardOverview(BaseModel):
         default_factory=dict,
         description="scams_last_7_days, fraud_rings_last_7_days, complaints_last_7_days",
     )
+    scams_trend: TrendInfo = Field(default_factory=TrendInfo)
+    fraud_rings_trend: TrendInfo = Field(default_factory=TrendInfo)
+    hotspots_trend: TrendInfo = Field(default_factory=TrendInfo)
+    counterfeit_trend: TrendInfo = Field(default_factory=TrendInfo)
     last_updated: datetime
 
 
