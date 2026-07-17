@@ -80,8 +80,8 @@ export default function Sidebar({ collapsed, onToggle }) {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b border-gray-800/50">
-        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0">
-          <ShieldAlert className="w-5 h-5 text-white" />
+        <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+          <img src="/favicon.svg" alt="Rakshak AI Logo" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (
           <div className="animate-fade-in">
