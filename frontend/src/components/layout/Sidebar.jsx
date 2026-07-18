@@ -170,7 +170,7 @@ export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobile
         {/* Collapse Toggle */}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center w-full py-2 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-gray-800/50 transition-all"
+          className="hidden md:flex items-center justify-center w-full py-2 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-gray-800/50 transition-all"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
