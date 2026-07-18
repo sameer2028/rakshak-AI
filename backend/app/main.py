@@ -100,6 +100,7 @@ app.include_router(api_router)
 # ─── Health Check ────────────────────────────────────────────────
 
 @app.get("/", tags=["Health"])
+@app.head("/", tags=["Health"])
 async def root():
     """Root endpoint - API health check."""
     return {
@@ -111,6 +112,7 @@ async def root():
 
 
 @app.get("/health", tags=["Health"])
+@app.head("/health", tags=["Health"])
 async def health_check():
     """Detailed health check endpoint."""
     return {
