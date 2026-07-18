@@ -200,7 +200,7 @@ export default function NetworkGraph({ data, onNodeClick, graphRef }) {
   }, [onNodeClick]);
 
   return (
-    <div className="h-full w-full rounded-xl overflow-hidden bg-gray-900/50" ref={graphRef}>
+    <div className="absolute inset-0 rounded-xl overflow-hidden bg-gray-900/50" ref={graphRef}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

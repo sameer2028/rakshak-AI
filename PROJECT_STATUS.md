@@ -610,7 +610,7 @@ Wire up live dashboard with real-time data from all modules.
 
 ---
 
-# PHASE 10 — SEED DATA + POLISH (NEXT) 🔜
+# PHASE 10 — SEED DATA + POLISH
 
 ## Goal
 Generate realistic demo data and polish everything.
