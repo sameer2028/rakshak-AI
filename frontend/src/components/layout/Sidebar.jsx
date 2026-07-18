@@ -73,7 +73,7 @@ export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobile
   return (
     <aside
       className={cn(
-        'fixed top-0 left-0 h-screen z-50 flex flex-col transition-all duration-300',
+        'fixed top-0 left-0 h-[100dvh] z-50 flex flex-col transition-all duration-300',
         'bg-surface-primary/95 backdrop-blur-xl border-r border-gray-800/50',
         // Desktop
         'md:translate-x-0',
