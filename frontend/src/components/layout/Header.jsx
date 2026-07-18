@@ -1,10 +1,10 @@
 import useAuthStore from '../../store/authStore';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, Menu } from 'lucide-react';
 import { APP_NAME } from '../../constants/config';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -12,7 +12,15 @@ export default function Header() {
     <header className="h-16 border-b border-gray-800/50 bg-surface-primary/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">
       {/* Left - Page context */}
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-semibold text-white">{APP_NAME}</h2>
+        {/* Hamburger Menu for Mobile */}
+        <button 
+          onClick={onMenuClick}
+          className="md:hidden p-2 -ml-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50 transition-all"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-lg font-semibold text-white truncate max-w-[150px] sm:max-w-none">{APP_NAME}</h2>
         <span className="text-xs text-gray-500 hidden md:inline">|</span>
         <span className="text-xs text-gray-500 hidden md:inline tracking-wider uppercase">
           Intelligence Grid

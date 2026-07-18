@@ -62,7 +62,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function Sidebar({ collapsed, onToggle }) {
+export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobileMenuOpen }) {
   const { user, logout } = useAuthStore();
   const location = useLocation();
 
@@ -75,7 +75,12 @@ export default function Sidebar({ collapsed, onToggle }) {
       className={cn(
         'fixed top-0 left-0 h-screen z-50 flex flex-col transition-all duration-300',
         'bg-surface-primary/95 backdrop-blur-xl border-r border-gray-800/50',
-        collapsed ? 'w-[72px]' : 'w-[260px]'
+        // Desktop
+        'md:translate-x-0',
+        collapsed ? 'md:w-[72px]' : 'md:w-[260px]',
+        // Mobile
+        'w-[260px]',
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       )}
     >
       {/* Logo */}
@@ -101,6 +106,7 @@ export default function Sidebar({ collapsed, onToggle }) {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => setMobileMenuOpen?.(false)}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
                 'text-sm font-medium',
@@ -126,6 +132,7 @@ export default function Sidebar({ collapsed, onToggle }) {
         {/* Profile */}
         <NavLink
           to={ROUTES.PROFILE}
+          onClick={() => setMobileMenuOpen?.(false)}
           className={cn(
             'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all',
             'text-gray-400 hover:text-white hover:bg-gray-800/50',
@@ -147,7 +154,10 @@ export default function Sidebar({ collapsed, onToggle }) {
 
         {/* Logout */}
         <button
-          onClick={logout}
+          onClick={() => {
+            logout();
+            setMobileMenuOpen?.(false);
+          }}
           className={cn(
             'flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all',
             'text-gray-500 hover:text-red-400 hover:bg-red-500/10'
