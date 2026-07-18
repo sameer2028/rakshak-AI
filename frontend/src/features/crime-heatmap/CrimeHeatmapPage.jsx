@@ -74,7 +74,7 @@ export default function CrimeHeatmapPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 lg:overflow-hidden">
-        <div className="lg:col-span-3 min-h-[400px] lg:h-full">
+        <div className="lg:col-span-3 h-[400px] lg:h-full">
           <HeatmapView points={points} />
         </div>
         <div className="lg:col-span-1 h-auto lg:h-full">
