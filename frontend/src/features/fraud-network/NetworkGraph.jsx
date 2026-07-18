@@ -120,7 +120,7 @@ function FitViewUpdater({ nodes }) {
       // Wait for ReactFlow to render the newly positioned nodes
       setTimeout(() => {
         fitView({ padding: 0.2, duration: 800 });
-      }, 50);
+      }, 250);
     }
   }, [nodes, fitView]);
   
@@ -200,7 +200,7 @@ export default function NetworkGraph({ data, onNodeClick, graphRef }) {
   }, [onNodeClick]);
 
   return (
-    <div className="absolute inset-0 rounded-xl overflow-hidden bg-gray-900/50" ref={graphRef}>
+    <div className="absolute inset-0 rounded-xl overflow-hidden bg-gray-900/50" ref={graphRef} style={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

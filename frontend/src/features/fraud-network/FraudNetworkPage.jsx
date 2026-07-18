@@ -229,7 +229,7 @@ export default function FraudNetworkPage() {
         </div>
 
         {/* Graph Area */}
-        <div className="flex-1 relative rounded-xl border border-gray-700/50 bg-gray-900/30 overflow-hidden shadow-inner flex flex-col h-[500px] lg:h-auto lg:min-h-0">
+        <div className="w-full lg:flex-1 relative rounded-xl border border-gray-700/50 bg-gray-900/30 overflow-hidden shadow-inner block h-[500px] lg:h-auto lg:min-h-0">
           
           {isLoading && !graphData && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-900/60 backdrop-blur-sm">

@@ -36,7 +36,7 @@ export default function HeatmapView({ points }) {
   };
 
   return (
-    <div className="absolute inset-0 rounded-xl overflow-hidden border border-gray-700/50 shadow-lg z-0">
+    <div className="absolute inset-0 rounded-xl overflow-hidden border border-gray-700/50 shadow-lg z-0" style={{ width: '100%', height: '100%' }}>
       <MapContainer 
         center={center} 
         zoom={zoom} 
