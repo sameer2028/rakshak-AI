@@ -108,7 +108,7 @@ export default function FraudNetworkPage() {
   }, [addToast]);
 
   return (
-    <div className="h-[calc(100vh-6rem)] flex flex-col space-y-4 animate-fade-in relative overflow-hidden">
+    <div className="min-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-6rem)] flex flex-col space-y-4 animate-fade-in relative lg:overflow-hidden">
       {/* Header & Stats Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 shrink-0">
         <div>
@@ -229,7 +229,7 @@ export default function FraudNetworkPage() {
         </div>
 
         {/* Graph Area */}
-        <div className="flex-1 relative rounded-xl border border-gray-700/50 bg-gray-900/30 overflow-hidden shadow-inner flex flex-col min-h-0">
+        <div className="flex-1 relative rounded-xl border border-gray-700/50 bg-gray-900/30 overflow-hidden shadow-inner flex flex-col min-h-[500px] lg:min-h-0">
           
           {isLoading && !graphData && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-900/60 backdrop-blur-sm">

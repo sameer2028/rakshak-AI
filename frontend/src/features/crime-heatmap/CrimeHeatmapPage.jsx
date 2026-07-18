@@ -45,7 +45,7 @@ export default function CrimeHeatmapPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-6rem)] flex flex-col animate-fade-in relative">
+    <div className="min-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-6rem)] flex flex-col animate-fade-in relative">
       <div className="flex justify-between items-end mb-4">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -73,11 +73,11 @@ export default function CrimeHeatmapPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 overflow-hidden">
-        <div className="lg:col-span-3 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 lg:overflow-hidden">
+        <div className="lg:col-span-3 min-h-[400px] lg:h-full">
           <HeatmapView points={points} />
         </div>
-        <div className="lg:col-span-1 h-full">
+        <div className="lg:col-span-1 h-auto lg:h-full">
           <DistrictRiskPanel districts={districts} isLoading={isLoading && districts.length === 0} />
         </div>
       </div>
