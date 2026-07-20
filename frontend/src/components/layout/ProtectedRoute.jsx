@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import { ROUTES } from '../../constants/routes';
 
 /**
  * ProtectedRoute - Wraps routes that require authentication.
@@ -13,7 +14,7 @@ export default function ProtectedRoute({ allowedRoles }) {
   const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={ROUTES.REVIEWER} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user?.role)) {

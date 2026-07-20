@@ -3,10 +3,12 @@ import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import { ROUTES } from './constants/routes';
 import ToastContainer from './components/common/ToastContainer';
+import useAuthStore from './store/authStore';
 
 // We'll import pages as they are built
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
+import ReviewerPage from './features/reviewer/ReviewerPage';
 import CitizenShieldPage from './features/citizen-shield/CitizenShieldPage';
 import ScamDetectionPage from './features/scam-detection/ScamDetectionPage';
 import FraudNetworkPage from './features/fraud-network/FraudNetworkPage';
@@ -22,12 +24,21 @@ const Placeholder = ({ title }) => (
   </div>
 );
 
+const RootRedirect = () => {
+  const { user } = useAuthStore();
+  if (['police', 'admin'].includes(user?.role)) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
+  return <Navigate to={ROUTES.CITIZEN_SHIELD} replace />;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <ToastContainer />
       <Routes>
         {/* Public Routes */}
+        <Route path={ROUTES.REVIEWER} element={<ReviewerPage />} />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
@@ -65,12 +76,12 @@ function App() {
             <Route path={ROUTES.PROFILE} element={<Placeholder title="User Profile" />} />
             
             {/* Default fallback inside app */}
-            <Route path="/" element={<Navigate to={ROUTES.CITIZEN_SHIELD} replace />} />
+            <Route path="/" element={<RootRedirect />} />
           </Route>
         </Route>
 
         {/* Global Fallback */}
-        <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
+        <Route path="*" element={<Navigate to={ROUTES.REVIEWER} replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -83,6 +83,9 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                 />
               </div>
+              <p className="mt-2 text-xs text-slate-500 text-right">
+                All test accounts use: <span className="font-mono text-slate-400">password123</span>
+              </p>
             </div>
 
             {error && (
@@ -106,10 +109,15 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-400">Don't have an account? </span>
-            <Link to={ROUTES.REGISTER} className="font-medium text-blue-400 hover:text-blue-300">
-              Register now
+          <div className="mt-6 flex flex-col items-center space-y-3 text-sm">
+            <div>
+              <span className="text-gray-400">Don't have an account? </span>
+              <Link to={ROUTES.REGISTER} className="font-medium text-blue-400 hover:text-blue-300">
+                Register now
+              </Link>
+            </div>
+            <Link to={ROUTES.REVIEWER} className="text-gray-500 hover:text-gray-400 text-xs flex items-center space-x-1 transition-colors">
+              <span>← Back to Reviewer Portal</span>
             </Link>
           </div>
         </div>

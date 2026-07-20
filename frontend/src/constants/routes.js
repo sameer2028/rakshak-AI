@@ -2,6 +2,7 @@
 export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
+  REVIEWER: '/reviewer',
   DASHBOARD: '/dashboard',
   CITIZEN_SHIELD: '/citizen-shield',
   SCAM_DETECTION: '/scam-detection',
