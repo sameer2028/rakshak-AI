@@ -7,6 +7,7 @@ TF-IDF + Logistic Regression for scam message classification.
 import os
 import joblib
 from loguru import logger
+from deep_translator import GoogleTranslator
 
 class ScamNLPEngine:
     """NLP engine for scam text classification."""
@@ -50,9 +51,21 @@ class ScamNLPEngine:
             logger.warning("ScamNLPEngine model not loaded. Using fallback rules.")
             return self._fallback_classify(text)
             
+        # Translate to English if needed (GoogleTranslator auto-detects)
+        try:
+            translated_text = GoogleTranslator(source='auto', target='en').translate(text)
+            if translated_text and translated_text != text:
+                logger.info(f"ScamNLPEngine: Translated input to: {translated_text[:50]}...")
+                text_to_classify = translated_text
+            else:
+                text_to_classify = text
+        except Exception as e:
+            logger.warning(f"ScamNLPEngine: Translation failed, using original text: {e}")
+            text_to_classify = text
+            
         try:
             # Predict probabilities and class
-            probs = self.model.predict_proba([text])[0]
+            probs = self.model.predict_proba([text_to_classify])[0]
             classes = self.model.classes_
             
             # Find the max probability class

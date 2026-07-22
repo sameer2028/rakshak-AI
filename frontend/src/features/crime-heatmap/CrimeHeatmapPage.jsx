@@ -4,8 +4,10 @@ import HeatmapView from './HeatmapView';
 import HeatmapFilters from './HeatmapFilters';
 import DistrictRiskPanel from './DistrictRiskPanel';
 import { crimeHeatmapApi } from '../../api/crime-heatmap.api';
+import { useTranslation } from 'react-i18next';
 
 export default function CrimeHeatmapPage() {
+  const { t } = useTranslation();
   const [points, setPoints] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,10 +52,10 @@ export default function CrimeHeatmapPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <Map className="w-8 h-8 text-blue-500" />
-            Crime Density Heatmap
+            {t('crime_density_heatmap')}
           </h1>
           <p className="text-gray-400 mt-1 text-sm">
-            Geospatial intelligence of cybercrime hotspots across India.
+            {t('heatmap_subtitle')}
           </p>
         </div>
         

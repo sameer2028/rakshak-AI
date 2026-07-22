@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Mic, PhoneCall, Radio, Send, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from "../../lib/utils";
+import { useTranslation } from 'react-i18next';
 
 export default function TranscriptInput({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     transcript: '',
     caller_number: '',
@@ -33,10 +35,10 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex justify-between items-end mb-2 flex-shrink-0">
           <label className="block text-sm font-medium text-gray-300">
-            Call Transcript
+            {t('call_transcript')}
           </label>
           <span className="text-xs text-blue-400 flex items-center gap-1">
-            <Mic className="w-3 h-3" /> Auto-transcription active
+            <Mic className="w-3 h-3" /> {t('auto_transcription_active')}
           </span>
         </div>
         <div className="relative group flex-1 min-h-0">
@@ -46,7 +48,7 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
             value={formData.transcript}
             onChange={handleChange}
             className="block w-full h-full p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none font-mono text-sm leading-relaxed custom-scrollbar"
-            placeholder="Paste the audio transcript here...&#10;&#10;Example:&#10;[00:00] Caller: Hello, am I speaking to John Doe?&#10;[00:05] Receiver: Yes.&#10;[00:07] Caller: This is officer Sharma from the CBI. There is a parcel in your name stopped at customs containing illegal items. You are under digital arrest..."
+            placeholder={t('transcript_placeholder')}
           />
           {isLoading && (
             <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-[1px] rounded-xl flex items-center justify-center">
@@ -62,12 +64,12 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
       <div className="flex-shrink-0 bg-gray-800/30 border border-gray-700/50 rounded-xl p-5">
         <h4 className="text-sm font-medium text-gray-300 mb-4 flex items-center gap-2">
           <Radio className="w-4 h-4 text-gray-400" />
-          Call Metadata (Optional)
+          {t('call_metadata_optional')}
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Caller Number</label>
+            <label className="block text-xs text-gray-400 mb-1.5">{t('caller_number')}</label>
             <div className="relative">
               <PhoneCall className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-gray-500" />
               <input
@@ -82,7 +84,7 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
           </div>
           
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Receiver Number</label>
+            <label className="block text-xs text-gray-400 mb-1.5">{t('receiver_number')}</label>
             <div className="relative">
               <PhoneCall className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-gray-500" />
               <input
@@ -107,7 +109,7 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
             className="w-4 h-4 rounded border-gray-600 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 bg-gray-700"
           />
           <label htmlFor="is_voip" className="text-sm text-gray-300 cursor-pointer flex-1 flex justify-between items-center">
-            <span>Flag as suspected VoIP / Spoofed Call</span>
+            <span>{t('flag_voip')}</span>
             <AlertCircle className="w-4 h-4 text-amber-500/70" />
           </label>
         </div>
@@ -121,12 +123,12 @@ export default function TranscriptInput({ onSubmit, isLoading }) {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Running NLP Analysis...
+            {t('running_nlp')}
           </>
         ) : (
           <>
             <Send className="w-5 h-5" />
-            Analyze Transcript
+            {t('analyze_transcript')}
           </>
         )}
       </button>

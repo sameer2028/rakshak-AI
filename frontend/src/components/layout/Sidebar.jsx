@@ -16,46 +16,54 @@ import {
   ChevronRight,
   ShieldAlert,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const NAV_ITEMS = [
   {
-    label: 'Dashboard',
+    labelKey: 'dashboard',
+    defaultLabel: 'Dashboard',
     path: ROUTES.DASHBOARD,
     icon: LayoutDashboard,
     roles: ['police', 'admin'],
   },
   {
-    label: 'Citizen Shield',
+    labelKey: 'citizen_shield',
+    defaultLabel: 'Citizen Shield',
     path: ROUTES.CITIZEN_SHIELD,
     icon: Shield,
     roles: ['citizen', 'police', 'bank', 'telecom', 'admin'],
   },
   {
-    label: 'Scam Detection',
+    labelKey: 'scam_detection',
+    defaultLabel: 'Scam Detection',
     path: ROUTES.SCAM_DETECTION,
     icon: Phone,
     roles: ['citizen', 'police', 'admin'],
   },
   {
-    label: 'Fraud Network',
+    labelKey: 'fraud_network',
+    defaultLabel: 'Fraud Network',
     path: ROUTES.FRAUD_NETWORK,
     icon: Network,
     roles: ['police', 'bank', 'admin'],
   },
   {
-    label: 'Crime Heatmap',
+    labelKey: 'crime_heatmap',
+    defaultLabel: 'Crime Heatmap',
     path: ROUTES.CRIME_HEATMAP,
     icon: Map,
     roles: ['citizen', 'police', 'bank', 'telecom', 'admin'],
   },
   {
-    label: 'Counterfeit',
+    labelKey: 'counterfeit',
+    defaultLabel: 'Counterfeit',
     path: ROUTES.COUNTERFEIT,
     icon: Banknote,
     roles: ['police', 'bank', 'admin'],
   },
   {
-    label: 'Alerts',
+    labelKey: 'alerts',
+    defaultLabel: 'Alerts',
     path: ROUTES.ALERTS,
     icon: Bell,
     roles: ['police', 'admin'],
@@ -65,6 +73,7 @@ const NAV_ITEMS = [
 export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobileMenuOpen }) {
   const { user, logout } = useAuthStore();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => item.roles.includes(user?.role)
@@ -121,7 +130,7 @@ export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobile
                   isActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-blue-400'
                 )}
               />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{item.labelKey ? (t(item.labelKey) !== item.labelKey ? t(item.labelKey) : item.defaultLabel) : item.defaultLabel}</span>}
             </NavLink>
           );
         })}
@@ -164,7 +173,7 @@ export default function Sidebar({ collapsed, onToggle, mobileMenuOpen, setMobile
           )}
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
-          {!collapsed && <span className="text-sm">Logout</span>}
+          {!collapsed && <span className="text-sm">{t('logout')}</span>}
         </button>
 
         {/* Collapse Toggle */}

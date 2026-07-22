@@ -1,5 +1,6 @@
 import useAuthStore from '../../store/authStore';
-import { Bell, Search, Menu } from 'lucide-react';
+import { Bell, Search, Menu, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { APP_NAME } from '../../constants/config';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
@@ -7,6 +8,11 @@ import { ROUTES } from '../../constants/routes';
 export default function Header({ onMenuClick }) {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const { i18n, t } = useTranslation();
+
+  const handleLanguageChange = (e) => {
+    i18n.changeLanguage(e.target.value);
+  };
 
   return (
     <header className="h-16 border-b border-gray-800/50 bg-surface-primary/80 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">
@@ -20,7 +26,7 @@ export default function Header({ onMenuClick }) {
           <Menu className="w-6 h-6" />
         </button>
 
-        <h2 className="text-lg font-semibold text-white truncate max-w-[150px] sm:max-w-none">{APP_NAME}</h2>
+        <h2 className="text-lg font-semibold text-white truncate max-w-[150px] sm:max-w-none">{t('app_title')}</h2>
         <span className="text-xs text-gray-500 hidden md:inline">|</span>
         <span className="text-xs text-gray-500 hidden md:inline tracking-wider uppercase">
           Intelligence Grid
@@ -37,6 +43,30 @@ export default function Header({ onMenuClick }) {
             placeholder="Search..."
             className="bg-transparent text-sm text-gray-300 placeholder-gray-600 outline-none w-40"
           />
+        </div>
+
+        {/* Language Selector */}
+        <div className="flex items-center gap-1 bg-gray-800/40 border border-gray-700/50 rounded-lg px-2 py-1.5">
+          <Globe className="w-4 h-4 text-gray-500" />
+          <select 
+            className="bg-transparent text-sm text-gray-300 outline-none cursor-pointer"
+            value={i18n.language || 'en'}
+            onChange={handleLanguageChange}
+          >
+            <option className="bg-gray-900" value="en">English</option>
+            <option className="bg-gray-900" value="hi">हिंदी (Hindi)</option>
+            <option className="bg-gray-900" value="bn">বাংলা (Bengali)</option>
+            <option className="bg-gray-900" value="mr">मराठी (Marathi)</option>
+            <option className="bg-gray-900" value="te">తెలుగు (Telugu)</option>
+            <option className="bg-gray-900" value="ta">தமிழ் (Tamil)</option>
+            <option className="bg-gray-900" value="gu">ગુજરાતી (Gujarati)</option>
+            <option className="bg-gray-900" value="ur">اردو (Urdu)</option>
+            <option className="bg-gray-900" value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option className="bg-gray-900" value="or">ଓଡ଼ିଆ (Odia)</option>
+            <option className="bg-gray-900" value="ml">മലയാളം (Malayalam)</option>
+            <option className="bg-gray-900" value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option className="bg-gray-900" value="as">অসমীয়া (Assamese)</option>
+          </select>
         </div>
 
         {/* Notifications Bell */}

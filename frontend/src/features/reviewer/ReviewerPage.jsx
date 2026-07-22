@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Users, Building, PhoneCall, Copy, ArrowRight, ShieldCheck, Check, Fingerprint, Map, AlertTriangle } from 'lucide-react';
 import { useToastStore } from '../../store/toastStore';
 import { ROUTES } from '../../constants/routes';
+import { useTranslation } from 'react-i18next';
 
 const personas = [
   {
@@ -64,6 +65,7 @@ const personas = [
 
 export default function ReviewerPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const addToast = useToastStore((state) => state.addToast);
   const [copiedEmail, setCopiedEmail] = useState(null);
   
@@ -100,7 +102,7 @@ export default function ReviewerPage() {
             <span className="text-sm font-medium tracking-wide text-slate-300">Reviewer Portal</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-4">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Rakshak AI</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">{t('welcome')}</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-400 leading-relaxed font-light">
             Experience the platform through different perspectives. Copy the credentials below and log in to explore the specific modules and dashboards tailored for each persona.
@@ -140,7 +142,7 @@ export default function ReviewerPage() {
               {/* Credentials */}
               <div className="space-y-4 mb-6 relative z-10">
                 <div>
-                  <div className="text-xs text-slate-500 mb-1">Email</div>
+                  <div className="text-xs text-slate-500 mb-1">{t('email')}</div>
                   <button 
                     onClick={() => handleCopyEmail(persona)}
                     className="w-full text-sm font-mono text-slate-300 bg-slate-950/50 p-2 rounded-lg border border-slate-800 flex items-center justify-between hover:border-indigo-500/50 hover:bg-slate-900 transition-colors group/copy"
@@ -154,7 +156,7 @@ export default function ReviewerPage() {
                   </button>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 mb-1">Password</div>
+                  <div className="text-xs text-slate-500 mb-1">{t('password')}</div>
                   <button 
                     onClick={() => handleCopyPassword(persona.password)}
                     className="w-full text-sm font-mono text-slate-300 bg-slate-950/50 p-2 rounded-lg border border-slate-800 flex items-center justify-between hover:border-indigo-500/50 hover:bg-slate-900 transition-colors group/copy"

@@ -11,6 +11,8 @@ const NODE_TYPES = [
   { id: 'bank_account', label: 'Bank Account' },
 ];
 
+import { useTranslation } from 'react-i18next';
+
 export default function GraphControls({ 
   onAnalyze, 
   onSearch, 
@@ -19,6 +21,7 @@ export default function GraphControls({
   activeFilters,
   communitiesCount = 0
 }) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleCommunityChange = (e) => {
@@ -36,7 +39,7 @@ export default function GraphControls({
       <div className="glass-card p-4 border border-gray-700/50">
         <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
           <Cpu className="w-4 h-4 text-purple-400" />
-          Graph Intelligence Algorithms
+          {t('graph_intelligence_algorithms')}
         </h3>
         <div className="flex flex-wrap gap-2">
           <button
@@ -44,21 +47,21 @@ export default function GraphControls({
             disabled={isLoading}
             className="px-3 py-1.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 text-xs font-medium hover:bg-purple-500/20 transition-all disabled:opacity-50"
           >
-            Detect Communities (Louvain)
+            {t('detect_communities')}
           </button>
           <button
             onClick={() => onAnalyze('pagerank')}
             disabled={isLoading}
             className="px-3 py-1.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-medium hover:bg-blue-500/20 transition-all disabled:opacity-50"
           >
-            Find Ring Leaders (PageRank)
+            {t('find_ring_leaders')}
           </button>
           <button
             onClick={() => onAnalyze('centrality')}
             disabled={isLoading}
             className="px-3 py-1.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/30 text-xs font-medium hover:bg-orange-500/20 transition-all disabled:opacity-50"
           >
-            Find Money Mules (Centrality)
+            {t('find_money_mules')}
           </button>
         </div>
       </div>
@@ -67,19 +70,19 @@ export default function GraphControls({
       <div className="glass-card p-4 border border-gray-700/50">
         <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
           <Filter className="w-4 h-4 text-green-400" />
-          Graph Filters
+          {t('graph_filters')}
         </h3>
         
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1.5 block">Community / Syndicate</label>
+            <label className="text-xs text-gray-400 mb-1.5 block">{t('community_syndicate')}</label>
             <select
               value={activeFilters.communityId === null ? '' : activeFilters.communityId}
               onChange={handleCommunityChange}
               disabled={isLoading}
               className="w-full bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-gray-300 py-1.5 px-3 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
-              <option value="">All Communities</option>
+              <option value="">{t('all_communities')}</option>
               {Array.from({ length: communitiesCount }).map((_, i) => (
                 <option key={i} value={i}>Community {i}</option>
               ))}
@@ -87,7 +90,7 @@ export default function GraphControls({
           </div>
 
           <div>
-            <label className="text-xs text-gray-400 mb-1.5 block">Node Type</label>
+            <label className="text-xs text-gray-400 mb-1.5 block">{t('node_type')}</label>
             <div className="flex flex-wrap gap-1.5">
               {NODE_TYPES.map((type) => (
                 <button
@@ -101,7 +104,7 @@ export default function GraphControls({
                       : "bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700"
                   )}
                 >
-                  {type.label}
+                  {type.id === '' ? t('all_types') : t(type.id)}
                 </button>
               ))}
             </div>
@@ -117,7 +120,7 @@ export default function GraphControls({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search phone, UPI..."
+            placeholder={t('search_placeholder')}
             className="w-full pl-9 pr-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-gray-300 focus:ring-1 focus:ring-purple-500 outline-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter') onSearch(searchQuery);
@@ -141,7 +144,7 @@ export default function GraphControls({
           className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-700 border border-gray-600 transition-all"
           disabled={isLoading}
         >
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search'}
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('search_button')}
         </button>
       </div>
     </div>

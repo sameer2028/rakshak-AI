@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ShieldAlert, Mail, Lock, Loader2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../constants/routes';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -68,7 +70,7 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300">
-                Password
+                {t('password')}
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -111,7 +113,7 @@ export default function LoginPage() {
 
           <div className="mt-6 flex flex-col items-center space-y-3 text-sm">
             <div>
-              <span className="text-gray-400">Don't have an account? </span>
+              <span className="text-gray-400">{t('dont_have_account')} </span>
               <Link to={ROUTES.REGISTER} className="font-medium text-blue-400 hover:text-blue-300">
                 Register now
               </Link>

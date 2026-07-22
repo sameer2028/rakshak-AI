@@ -1,6 +1,7 @@
 import { X, Network, AlertTriangle, Link as LinkIcon, Smartphone, CreditCard, Landmark, User, Skull } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import RiskMeter from '../../components/common/RiskMeter';
+import { useTranslation } from 'react-i18next';
 
 const PropertyRow = ({ label, value }) => (
   <div className="flex justify-between text-sm py-1.5 border-b border-gray-800/50 last:border-0">
@@ -10,6 +11,7 @@ const PropertyRow = ({ label, value }) => (
 );
 
 export default function NodeDetail({ node, onClose }) {
+  const { t } = useTranslation();
   if (!node) return null;
 
   const { metrics = {}, properties = {}, connected_nodes = [], connected_edges = [] } = node;
@@ -41,7 +43,7 @@ export default function NodeDetail({ node, onClose }) {
             <h3 className="text-lg font-bold text-white leading-tight mt-0.5">{node.label}</h3>
             {metrics.community_id != null && (
               <span className="inline-block mt-2 px-2 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded text-[10px] font-medium uppercase tracking-wider">
-                Cluster {metrics.community_id}
+                {t('cluster')} {metrics.community_id}
               </span>
             )}
           </div>
@@ -60,17 +62,17 @@ export default function NodeDetail({ node, onClose }) {
           <div className="flex-1 space-y-2">
             {isRingLeader && (
               <div className="px-2.5 py-1.5 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs font-medium flex items-center gap-2">
-                <AlertTriangle className="w-3.5 h-3.5" /> Suspected Ring Leader
+                <AlertTriangle className="w-3.5 h-3.5" /> {t('suspected_ring_leader')}
               </div>
             )}
             {isMoneyMule && (
               <div className="px-2.5 py-1.5 bg-orange-500/10 border border-orange-500/30 rounded text-orange-400 text-xs font-medium flex items-center gap-2">
-                <LinkIcon className="w-3.5 h-3.5" /> Suspected Money Mule
+                <LinkIcon className="w-3.5 h-3.5" /> {t('suspected_money_mule')}
               </div>
             )}
             {node.is_flagged && !isRingLeader && !isMoneyMule && (
               <div className="px-2.5 py-1.5 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs font-medium flex items-center gap-2">
-                <AlertTriangle className="w-3.5 h-3.5" /> Flagged Entity
+                <AlertTriangle className="w-3.5 h-3.5" /> {t('flagged_entity')}
               </div>
             )}
           </div>
@@ -79,7 +81,7 @@ export default function NodeDetail({ node, onClose }) {
         {/* Properties */}
         {Object.keys(properties).length > 0 && (
           <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-3">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Properties</h4>
+            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('properties')}</h4>
             <div className="space-y-1">
               {Object.entries(properties).map(([key, val]) => (
                 <PropertyRow key={key} label={key.replace(/_/g, ' ')} value={val?.toString()} />
@@ -91,11 +93,11 @@ export default function NodeDetail({ node, onClose }) {
         {/* Graph Metrics */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
-            <p className="text-xs text-gray-500 mb-1">PageRank</p>
+            <p className="text-xs text-gray-500 mb-1">{t('pagerank')}</p>
             <p className="text-sm font-mono text-gray-300">{(metrics.pagerank || 0).toFixed(4)}</p>
           </div>
           <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
-            <p className="text-xs text-gray-500 mb-1">Centrality</p>
+            <p className="text-xs text-gray-500 mb-1">{t('centrality')}</p>
             <p className="text-sm font-mono text-gray-300">{(metrics.centrality || 0).toFixed(4)}</p>
           </div>
         </div>
@@ -104,7 +106,7 @@ export default function NodeDetail({ node, onClose }) {
         {connected_nodes.length > 0 && (
           <div>
             <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Network className="w-3 h-3" /> Connections ({connected_nodes.length})
+              <Network className="w-3 h-3" /> {t('connections')} ({connected_nodes.length})
             </h4>
             <div className="space-y-2">
               {connected_nodes.slice(0, 10).map((cnode) => (
@@ -120,7 +122,7 @@ export default function NodeDetail({ node, onClose }) {
               ))}
               {connected_nodes.length > 10 && (
                 <p className="text-xs text-center text-gray-500 pt-2">
-                  + {connected_nodes.length - 10} more connections
+                  + {connected_nodes.length - 10} {t('more_connections')}
                 </p>
               )}
             </div>

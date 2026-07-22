@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ShieldAlert, Mail, Lock, User, Phone, Building, Loader2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../constants/routes';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -91,7 +93,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">Password</label>
+              <label className="block text-sm font-medium text-gray-300">{t('password')}</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-500" />

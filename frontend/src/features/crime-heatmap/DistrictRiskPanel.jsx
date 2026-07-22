@@ -1,7 +1,9 @@
 import { AlertTriangle } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function DistrictRiskPanel({ districts, isLoading }) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="glass-card h-full border border-gray-700/50 p-4 animate-pulse flex flex-col">
@@ -19,7 +21,7 @@ export default function DistrictRiskPanel({ districts, isLoading }) {
     <div className="glass-card h-full border border-gray-700/50 flex flex-col">
       <div className="p-4 border-b border-gray-700/50 flex items-center gap-2">
         <AlertTriangle className="w-5 h-5 text-red-400" />
-        <h3 className="text-sm font-semibold text-white">High Risk Districts</h3>
+        <h3 className="text-sm font-semibold text-white">{t('high_risk_districts')}</h3>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -49,8 +51,8 @@ export default function DistrictRiskPanel({ districts, isLoading }) {
               <p className="text-xs text-gray-500 mb-2">{district.state}</p>
               
               <div className="flex justify-between text-xs text-gray-400">
-                <span className="font-mono">Cases: {district.fraud_count}</span>
-                <span className="font-mono">Score: {district.risk_score}</span>
+                <span className="font-mono">{t('cases')} {district.fraud_count}</span>
+                <span className="font-mono">{t('score')} {district.risk_score}</span>
               </div>
               
               <div className="w-full bg-gray-900 rounded-full h-1.5 mt-2 overflow-hidden">

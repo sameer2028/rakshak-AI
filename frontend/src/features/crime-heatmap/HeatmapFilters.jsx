@@ -1,6 +1,8 @@
 import { Filter, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function HeatmapFilters({ filters, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     onChange({ ...filters, [e.target.name]: e.target.value });
   };
@@ -10,7 +12,7 @@ export default function HeatmapFilters({ filters, onChange }) {
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2 text-gray-400 mr-2">
           <Filter className="w-4 h-4" />
-          <span className="text-sm font-medium">Filters:</span>
+          <span className="text-sm font-medium">{t('filters')}</span>
         </div>
 
         <select
@@ -19,10 +21,10 @@ export default function HeatmapFilters({ filters, onChange }) {
           onChange={handleChange}
           className="bg-gray-900/50 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 outline-none"
         >
-          <option value="">All Crime Types</option>
+          <option value="">{t('all_crime_types')}</option>
           <option value="upi_fraud">UPI Fraud</option>
-          <option value="digital_arrest">Digital Arrest</option>
-          <option value="phishing">Phishing</option>
+          <option value="digital_arrest">{t('digital_arrest_type')}</option>
+          <option value="phishing">{t('phishing')}</option>
           <option value="counterfeit">Counterfeit Currency</option>
         </select>
 
@@ -32,7 +34,7 @@ export default function HeatmapFilters({ filters, onChange }) {
           onChange={handleChange}
           className="bg-gray-900/50 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 outline-none"
         >
-          <option value="">All States</option>
+          <option value="">{t('all_states')}</option>
           <option value="Maharashtra">Maharashtra</option>
           <option value="Delhi">Delhi</option>
           <option value="Karnataka">Karnataka</option>

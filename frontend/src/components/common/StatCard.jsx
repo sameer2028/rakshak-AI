@@ -1,6 +1,8 @@
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function StatCard({ title, value, icon: Icon, trend, colorClass }) {
+  const { t } = useTranslation();
   return (
     <div className="glass-card p-5 relative overflow-hidden group">
       <div className={cn('absolute top-0 right-0 w-32 h-32 opacity-10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150', colorClass)} />
@@ -20,7 +22,7 @@ export default function StatCard({ title, value, icon: Icon, trend, colorClass }
           <span className={cn('font-medium', (trend.isPositive ?? trend.is_positive) ? 'text-emerald-400' : 'text-red-400')}>
             {(trend.isPositive ?? trend.is_positive) ? '↑' : '↓'} {trend.value}%
           </span>
-          <span className="text-gray-500">vs last week</span>
+          <span className="text-gray-500">{t('vs_last_week')}</span>
         </div>
       )}
     </div>

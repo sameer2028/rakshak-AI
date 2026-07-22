@@ -7,8 +7,10 @@ import InteractiveScenario from './InteractiveScenario';
 import ScamResult from './ScamResult';
 import { scamDetectionApi } from '../../api/scam-detection.api';
 import { Phone, ShieldAlert, Cpu, FileText, PhoneCall, Mic, FileAudio, Gamepad2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ScamDetectionPage() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -44,11 +46,11 @@ export default function ScamDetectionPage() {
   };
 
   const tabs = [
-    { id: 'manual', label: 'Paste Text', icon: FileText },
-    { id: 'simulator', label: 'Simulator', icon: PhoneCall },
-    { id: 'live', label: 'Live Mic', icon: Mic },
-    { id: 'audio', label: 'Upload .WAV', icon: FileAudio },
-    { id: 'interactive', label: 'Interactive Scenario', icon: Gamepad2 },
+    { id: 'manual', label: t('paste_text'), icon: FileText },
+    { id: 'simulator', label: t('simulator'), icon: PhoneCall },
+    { id: 'live', label: t('live_mic'), icon: Mic },
+    { id: 'audio', label: t('upload_wav'), icon: FileAudio },
+    { id: 'interactive', label: t('interactive_scenario'), icon: Gamepad2 },
   ];
 
   return (
@@ -57,10 +59,10 @@ export default function ScamDetectionPage() {
       <div className="flex-shrink-0 mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-3">
           <Phone className="w-8 h-8 text-cyan-400" />
-          Digital Arrest Scam Detection
+          {t('digital_arrest_scam_detection')}
         </h1>
         <p className="text-gray-400 mt-2">
-          Analyze call transcripts using NLP to detect impersonation and extortion attempts.
+          {t('scam_detection_subtitle')}
         </p>
       </div>
 
@@ -114,7 +116,7 @@ export default function ScamDetectionPage() {
                 <div className="h-full min-h-[400px] border border-dashed border-gray-700/50 rounded-2xl flex flex-col items-center justify-center text-gray-500 p-8">
                   <ShieldAlert className="w-12 h-12 mb-4 opacity-20" />
                   <p className="text-center max-w-sm text-sm">
-                    Paste a call transcript and click "Analyze" to detect potential scam indicators.
+                    {t('paste_transcript_prompt')}
                   </p>
                 </div>
               )}

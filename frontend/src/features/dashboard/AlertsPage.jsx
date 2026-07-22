@@ -3,8 +3,10 @@ import { dashboardApi } from '../../api/dashboard.api';
 import { ShieldAlert, AlertTriangle, CheckCircle2, Filter } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import AlertModal from './AlertModal';
+import { useTranslation } from 'react-i18next';
 
 export default function AlertsPage() {
+  const { t } = useTranslation();
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, active, resolved
@@ -48,10 +50,10 @@ export default function AlertsPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <ShieldAlert className="w-8 h-8 text-amber-500" />
-            Threat Alerts Database
+            {t('threat_alerts_database')}
           </h1>
           <p className="text-gray-400 mt-1 text-sm">
-            Comprehensive log of all automated threat detections and alerts.
+            {t('alerts_subtitle')}
           </p>
         </div>
         
@@ -62,9 +64,9 @@ export default function AlertsPage() {
             onChange={(e) => setFilter(e.target.value)}
             className="bg-gray-800 border border-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 text-white"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active Only</option>
-            <option value="resolved">Resolved</option>
+            <option value="all">{t('all_status')}</option>
+            <option value="active">{t('active_only')}</option>
+            <option value="resolved">{t('resolved')}</option>
           </select>
 
           <select 
@@ -72,11 +74,11 @@ export default function AlertsPage() {
             onChange={(e) => setSeverityFilter(e.target.value)}
             className="bg-gray-800 border border-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 text-white"
           >
-            <option value="all">All Severity</option>
-            <option value="critical">Critical</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+            <option value="all">{t('all_severity')}</option>
+            <option value="critical">{t('critical')}</option>
+            <option value="high">{t('high')}</option>
+            <option value="medium">{t('medium')}</option>
+            <option value="low">{t('low')}</option>
           </select>
         </div>
       </div>
@@ -89,19 +91,19 @@ export default function AlertsPage() {
         ) : alerts.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-16">
             <ShieldAlert className="w-16 h-16 text-gray-600 mb-4 opacity-50" />
-            <h3 className="text-gray-400 font-medium text-lg">No alerts found</h3>
-            <p className="text-gray-500 text-sm mt-2">Try adjusting your filters.</p>
+            <h3 className="text-gray-400 font-medium text-lg">{t('no_alerts_found')}</h3>
+            <p className="text-gray-500 text-sm mt-2">{t('adjust_filters')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-gray-900/50 text-xs text-gray-500 border-b border-gray-800 uppercase tracking-wider">
-                  <th className="p-4 font-medium">Time</th>
-                  <th className="p-4 font-medium">Severity</th>
-                  <th className="p-4 font-medium">Alert Details</th>
-                  <th className="p-4 font-medium">Module</th>
-                  <th className="p-4 font-medium text-right">Action</th>
+                  <th className="p-4 font-medium">{t('time_col')}</th>
+                  <th className="p-4 font-medium">{t('severity_col')}</th>
+                  <th className="p-4 font-medium">{t('alert_details_col')}</th>
+                  <th className="p-4 font-medium">{t('module_col')}</th>
+                  <th className="p-4 font-medium text-right">{t('action_col')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/50">
@@ -155,14 +157,14 @@ export default function AlertsPage() {
                     <td className="p-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                       {alert.is_resolved ? (
                         <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 px-3 py-1.5 rounded">
-                          <CheckCircle2 className="w-3 h-3" /> Resolved
+                          <CheckCircle2 className="w-3 h-3" /> {t('resolved')}
                         </span>
                       ) : (
                         <button 
                           onClick={() => handleResolve(alert.id)}
                           className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1.5 rounded transition-colors"
                         >
-                          <CheckCircle2 className="w-3 h-3" /> Mark Resolved
+                          <CheckCircle2 className="w-3 h-3" /> {t('mark_resolved')}
                         </button>
                       )}
                     </td>

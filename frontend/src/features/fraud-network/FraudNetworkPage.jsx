@@ -9,8 +9,10 @@ import AnalysisResultPanel from './AnalysisResultPanel';
 import { fraudNetworkApi } from '../../api/fraud-network.api';
 import { useToastStore } from '../../store/toastStore';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function FraudNetworkPage() {
+  const { t } = useTranslation();
   const addToast = useToastStore((state) => state.addToast);
   
   // State
@@ -114,10 +116,10 @@ export default function FraudNetworkPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <Network className="w-8 h-8 text-purple-400" />
-            Fraud Network Intelligence
+            {t('fraud_network_intelligence')}
           </h1>
           <p className="text-gray-400 mt-2">
-            Interactive visualization of crime rings, money mules, and suspect links.
+            {t('interactive_viz')}
           </p>
         </div>
         
@@ -126,15 +128,15 @@ export default function FraudNetworkPage() {
           <div className="flex gap-3 overflow-x-auto pb-1 max-w-full">
             <div className="glass-card px-4 py-2 border border-purple-500/30 flex flex-col items-center">
               <span className="text-xl font-bold text-white">{graphData.total_nodes}</span>
-              <span className="text-[10px] text-purple-300 uppercase tracking-wider">Nodes</span>
+              <span className="text-[10px] text-purple-300 uppercase tracking-wider">{t('nodes')}</span>
             </div>
             <div className="glass-card px-4 py-2 border border-blue-500/30 flex flex-col items-center">
               <span className="text-xl font-bold text-white">{graphData.total_edges}</span>
-              <span className="text-[10px] text-blue-300 uppercase tracking-wider">Links</span>
+              <span className="text-[10px] text-blue-300 uppercase tracking-wider">{t('links')}</span>
             </div>
             <div className="glass-card px-4 py-2 border border-green-500/30 flex flex-col items-center">
               <span className="text-xl font-bold text-white">{graphData.communities_count}</span>
-              <span className="text-[10px] text-green-300 uppercase tracking-wider">Syndicates</span>
+              <span className="text-[10px] text-green-300 uppercase tracking-wider">{t('syndicates')}</span>
             </div>
           </div>
         )}
@@ -161,7 +163,7 @@ export default function FraudNetworkPage() {
                 activeTab === 'controls' ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-300"
               )}
             >
-              <Cpu className="w-3.5 h-3.5" /> Controls
+              <Cpu className="w-3.5 h-3.5" /> {t('controls')}
             </button>
             <button
               onClick={() => setActiveTab('communities')}
@@ -170,7 +172,7 @@ export default function FraudNetworkPage() {
                 activeTab === 'communities' ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-300"
               )}
             >
-              <Users className="w-3.5 h-3.5" /> Syndicates
+              <Users className="w-3.5 h-3.5" /> {t('syndicates')}
             </button>
           </div>
 
@@ -194,35 +196,35 @@ export default function FraudNetworkPage() {
             onClick={exportAsImage}
             className="w-full py-2.5 rounded-lg bg-gray-800/80 border border-gray-700 text-gray-300 text-sm font-medium hover:bg-gray-700 hover:text-white transition-all flex items-center justify-center gap-2"
           >
-            <Download className="w-4 h-4" /> Export Graph as PNG
+            <Download className="w-4 h-4" /> {t('export_graph')}
           </button>
 
           {/* Legend */}
           <div className="glass-card p-4 border border-gray-700/50 mt-auto">
             <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Layers className="w-3.5 h-3.5" /> Legend
+              <Layers className="w-3.5 h-3.5" /> {t('legend')}
             </h4>
             <div className="space-y-2.5 text-xs text-gray-300">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded border-2 border-[#ef4444] bg-[#7f1d1d]" /> Suspect
+                <div className="w-4 h-4 rounded border-2 border-[#ef4444] bg-[#7f1d1d]" /> {t('suspect')}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded border-2 border-[#3b82f6] bg-[#1e3a8a]" /> Victim
+                <div className="w-4 h-4 rounded border-2 border-[#3b82f6] bg-[#1e3a8a]" /> {t('victim')}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full border-2 border-[#374151] bg-[#1f2937]" /> Phone
+                <div className="w-4 h-4 rounded-full border-2 border-[#374151] bg-[#1f2937]" /> {t('phone')}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded border-2 border-[#8b5cf6] bg-[#4c1d95]" /> UPI ID
+                <div className="w-4 h-4 rounded border-2 border-[#8b5cf6] bg-[#4c1d95]" /> {t('upi_id')}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded border-2 border-[#10b981] bg-[#065f46]" /> Bank Account
+                <div className="w-4 h-4 rounded border-2 border-[#10b981] bg-[#065f46]" /> {t('bank_account')}
               </div>
               <div className="flex items-center gap-3 mt-4 pt-2 border-t border-gray-700/50">
-                <div className="w-4 h-4 rounded border-2 border-[#ef4444] bg-gradient-to-br from-[#7f1d1d] to-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.6)] flex items-center justify-center text-[10px]">👑</div> Ring Leader
+                <div className="w-4 h-4 rounded border-2 border-[#ef4444] bg-gradient-to-br from-[#7f1d1d] to-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.6)] flex items-center justify-center text-[10px]">👑</div> {t('ring_leader')}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded border-2 border-dashed border-[#f59e0b] bg-[#78350f] flex items-center justify-center text-[10px]">💰</div> Money Mule
+                <div className="w-4 h-4 rounded border-2 border-dashed border-[#f59e0b] bg-[#78350f] flex items-center justify-center text-[10px]">💰</div> {t('money_mule')}
               </div>
             </div>
           </div>
@@ -234,7 +236,7 @@ export default function FraudNetworkPage() {
           {isLoading && !graphData && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-900/60 backdrop-blur-sm">
               <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-purple-300 font-medium animate-pulse">Initializing Intelligence Grid...</p>
+              <p className="text-purple-300 font-medium animate-pulse">{t('initializing_grid')}</p>
             </div>
           )}
 
@@ -243,15 +245,15 @@ export default function FraudNetworkPage() {
               <div className="w-24 h-24 mb-6 opacity-20 text-gray-400">
                 <Network className="w-full h-full" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">No Network Data Found</h3>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">{t('no_network_data')}</h3>
               <p className="text-gray-500 text-sm max-w-sm text-center">
-                Try adjusting your filters or search query to explore the fraud intelligence graph.
+                {t('adjust_filters_prompt')}
               </p>
               <button 
                 onClick={() => setActiveFilters({ communityId: null, nodeType: null })}
                 className="mt-6 px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors"
               >
-                Reset View
+                {t('reset_view')}
               </button>
             </div>
           )}

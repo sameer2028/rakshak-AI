@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Send, Loader2, MessageSquare, Phone, CreditCard, Mail } from 'lucide-react';
 import { cn } from "../../lib/utils";
+import { useTranslation } from 'react-i18next';
 
 export default function FraudCheckForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     message: '',
     phone_number: '',
@@ -60,7 +62,7 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
       {/* Message/Content */}
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1.5">
-          Suspicious Message / Content
+          {t('suspicious_message_content')}
         </label>
         <div className="relative">
           <MessageSquare className="absolute top-3 left-3 w-5 h-5 text-gray-500" />
@@ -70,7 +72,7 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
             value={formData.message}
             onChange={handleChange}
             className="block w-full pl-10 pr-3 py-2.5 border border-gray-700 rounded-xl bg-gray-900/50 text-gray-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
-            placeholder="Paste the suspicious message, transcript, or context here..."
+            placeholder={t('paste_message')}
           />
         </div>
       </div>
@@ -80,7 +82,7 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
         {formData.source !== 'email' && (
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Sender Phone Number
+              {t('sender_phone')}
             </label>
             <div className="relative">
               <Phone className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
@@ -99,7 +101,7 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
         {/* UPI ID */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1.5">
-            UPI ID / VPA
+            {t('upi_id_vpa')}
           </label>
           <div className="relative">
             <CreditCard className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
@@ -118,7 +120,7 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
         {formData.source === 'email' && (
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Sender Email
+              {t('sender_email')}
             </label>
             <div className="relative">
               <Mail className="absolute top-1/2 -translate-y-1/2 left-3 w-5 h-5 text-gray-500" />
@@ -143,12 +145,12 @@ export default function FraudCheckForm({ onSubmit, isLoading }) {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Analyzing Data...
+            {t('analyzing_data')}
           </>
         ) : (
           <>
             <Send className="w-5 h-5" />
-            Run Security Check
+            {t('run_security_check')}
           </>
         )}
       </button>

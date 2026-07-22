@@ -1,6 +1,8 @@
 import { ShieldAlert, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function HighRiskAccounts({ accounts }) {
+  const { t } = useTranslation();
   if (!accounts || accounts.length === 0) {
     return (
       <div className="glass-card border border-gray-700/50 rounded-xl overflow-hidden p-8 flex flex-col items-center justify-center">
@@ -16,10 +18,10 @@ export default function HighRiskAccounts({ accounts }) {
       <div className="p-4 border-b border-gray-700/50 flex justify-between items-center bg-gray-800/20">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 text-red-400" />
-          High-Risk Accounts to Freeze
+          {t('high_risk_accounts')}
         </h3>
         <button className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors">
-          View All <ArrowRight className="w-3 h-3" />
+          {t('view_all')} <ArrowRight className="w-3 h-3" />
         </button>
       </div>
       

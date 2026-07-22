@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, CheckCircle, ShieldAlert, Cpu } from 'lucide-react';
 import api from '../../api/client';
+import { useTranslation } from 'react-i18next';
 
 /**
  * UploadSection — drag-and-drop currency note uploader with animated scanning progress.
@@ -10,6 +11,7 @@ import api from '../../api/client';
  *   onVerificationComplete(data) — called with the CCVerifyResponse on success
  */
 export default function UploadSection({ onVerificationComplete }) {
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [denomination, setDenomination] = useState(500);
@@ -122,10 +124,10 @@ export default function UploadSection({ onVerificationComplete }) {
       </div>
 
       <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 mb-1">
-        Upload Banknote for Analysis
+        {t('upload_banknote')}
       </h2>
       <p className="text-gray-400 text-sm mb-6">
-        Select denomination and upload a high-resolution flat image of the banknote front side.
+        {t('upload_banknote_desc')}
       </p>
 
       {/* Error Banner */}
@@ -165,8 +167,8 @@ export default function UploadSection({ onVerificationComplete }) {
                   <div className="p-4 bg-gray-800/40 rounded-full inline-block text-cyan-400 mb-3 border border-gray-700">
                     <Upload size={32} />
                   </div>
-                  <p className="text-gray-300 font-medium mb-1">Drag and drop your banknote here</p>
-                  <p className="text-gray-500 text-xs">Supports PNG, JPG, or JPEG</p>
+                  <p className="text-gray-300 font-medium mb-1">{t('drag_drop_banknote')}</p>
+                  <p className="text-gray-500 text-xs">{t('supports_images')}</p>
                 </div>
               )}
             </div>
@@ -199,7 +201,7 @@ export default function UploadSection({ onVerificationComplete }) {
         <div className="flex flex-col justify-between">
           <div>
             <label className="text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2 block">
-              Select Denomination
+              {t('select_denomination')}
             </label>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[10, 20, 50, 100, 200, 500].map((val) => (
@@ -240,7 +242,7 @@ export default function UploadSection({ onVerificationComplete }) {
             ) : (
               <>
                 <Cpu size={16} />
-                Analyze Note
+                {t('analyze_note')}
               </>
             )}
           </button>
@@ -251,15 +253,15 @@ export default function UploadSection({ onVerificationComplete }) {
       <div className="border-t border-gray-700/50 pt-4 flex justify-between text-xs text-gray-500">
         <div className="flex items-center gap-1.5">
           <CheckCircle size={13} className="text-cyan-400" />
-          <span>YOLOv11 Feature Detection</span>
+          <span>{t('yolo_detection')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <CheckCircle size={13} className="text-cyan-400" />
-          <span>EfficientNetV2 Classifier</span>
+          <span>{t('efficientnet_classifier')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <CheckCircle size={13} className="text-cyan-400" />
-          <span>EasyOCR Serial Matching</span>
+          <span>{t('easyocr_matching')}</span>
         </div>
       </div>
     </div>

@@ -3,8 +3,10 @@ import { cn } from '../../lib/utils';
 import { dashboardApi } from '../../api/dashboard.api';
 import AlertModal from './AlertModal';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function LiveAlertsFeed({ alerts, onResolve }) {
+  const { t } = useTranslation();
   const [selectedAlert, setSelectedAlert] = useState(null);
   
   const handleResolve = async (id) => {
@@ -21,7 +23,7 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
       <div className="p-4 border-b border-gray-700/50 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 text-amber-500" />
-          Live Threat Alerts
+          {t('live_threat_alerts')}
         </h3>
         <span className="bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded-full font-bold">
           {alerts?.filter(a => !a.is_resolved).length || 0} Active
@@ -75,7 +77,7 @@ export default function LiveAlertsFeed({ alerts, onResolve }) {
                       onClick={(e) => { e.stopPropagation(); handleResolve(alert.id); }}
                       className="flex items-center gap-1 text-xs font-medium text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded transition-colors"
                     >
-                      <CheckCircle2 className="w-3 h-3" /> Resolve
+                      <CheckCircle2 className="w-3 h-3" /> {t('resolve')}
                     </button>
                   )}
                 </div>

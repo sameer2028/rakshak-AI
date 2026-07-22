@@ -5,8 +5,10 @@ import { citizenShieldApi } from '../../api/citizen-shield.api';
 import { ShieldAlert, History, Shield, Loader2, Globe } from 'lucide-react';
 import VerdictBadge from '../../components/common/VerdictBadge';
 import { TRANSLATIONS } from '../../constants/translations';
+import { useTranslation } from 'react-i18next';
 
 export default function CitizenShieldPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('check'); // 'check' or 'history'
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -61,10 +63,10 @@ export default function CitizenShieldPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <Shield className="w-8 h-8 text-blue-500" />
-            Citizen Fraud Shield
+            {t('citizen_fraud_shield')}
           </h1>
           <p className="text-gray-400 mt-2">
-            Verify suspicious messages, phone numbers, or UPI IDs instantly using AI.
+            {t('citizen_shield_subtitle')}
           </p>
         </div>
         
@@ -91,7 +93,7 @@ export default function CitizenShieldPage() {
           }`}
         >
           <ShieldAlert className="w-4 h-4" />
-          New Scan
+          {t('new_scan')}
           {activeTab === 'check' && (
             <span className="absolute bottom-[-1px] left-0 w-full h-0.5 bg-blue-500 rounded-t-full shadow-[0_-2px_10px_rgba(59,130,246,0.5)]" />
           )}
@@ -103,7 +105,7 @@ export default function CitizenShieldPage() {
           }`}
         >
           <History className="w-4 h-4" />
-          My History
+          {t('my_history')}
           {activeTab === 'history' && (
             <span className="absolute bottom-[-1px] left-0 w-full h-0.5 bg-blue-500 rounded-t-full shadow-[0_-2px_10px_rgba(59,130,246,0.5)]" />
           )}
@@ -116,7 +118,7 @@ export default function CitizenShieldPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Form Column */}
             <div className="lg:col-span-5 glass-card p-6 border border-gray-700/50">
-              <h2 className="text-lg font-semibold text-white mb-6">Input Details</h2>
+              <h2 className="text-lg font-semibold text-white mb-6">{t('input_details')}</h2>
               <FraudCheckForm onSubmit={handleFraudCheck} isLoading={isLoading} />
             </div>
             
@@ -134,7 +136,7 @@ export default function CitizenShieldPage() {
                 <div className="h-full min-h-[300px] border border-dashed border-gray-700/50 rounded-2xl flex flex-col items-center justify-center text-gray-500 p-8">
                   <ShieldAlert className="w-12 h-12 mb-4 opacity-20" />
                   <p className="text-center max-w-sm">
-                    Enter suspicious details in the form and click "Run Security Check" to analyze for fraud.
+                    {t('enter_suspicious_details')}
                   </p>
                 </div>
               )}
@@ -147,11 +149,11 @@ export default function CitizenShieldPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-800/50 border-b border-gray-700/50 text-sm text-gray-400">
-                    <th className="p-4 font-medium">Date</th>
-                    <th className="p-4 font-medium">Source</th>
-                    <th className="p-4 font-medium">Risk Score</th>
-                    <th className="p-4 font-medium">Verdict</th>
-                    <th className="p-4 font-medium">Scam Type</th>
+                    <th className="p-4 font-medium">{t('date')}</th>
+                    <th className="p-4 font-medium">{t('source')}</th>
+                    <th className="p-4 font-medium">{t('risk_score')}</th>
+                    <th className="p-4 font-medium">{t('verdict')}</th>
+                    <th className="p-4 font-medium">{t('scam_type')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800/50">
@@ -159,13 +161,13 @@ export default function CitizenShieldPage() {
                     <tr>
                       <td colSpan="5" className="p-8 text-center text-gray-500">
                         <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                        Loading history...
+                        {t('loading_history')}
                       </td>
                     </tr>
                   ) : history.length === 0 ? (
                     <tr>
                       <td colSpan="5" className="p-8 text-center text-gray-500">
-                        No previous scans found.
+                        {t('no_previous_scans')}
                       </td>
                     </tr>
                   ) : (

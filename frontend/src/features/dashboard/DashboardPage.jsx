@@ -7,9 +7,11 @@ import { Shield, ShieldAlert, PhoneOff, AlertTriangle, Network, MapPin } from 'l
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { dashboardApi } from '../../api/dashboard.api';
 import { API_BASE_URL } from '../../constants/config';
+import { useTranslation } from 'react-i18next';
 
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [data, setData] = useState({
     overview: null,
     alerts: [],
@@ -94,10 +96,10 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <Shield className="w-8 h-8 text-blue-500" />
-            Command Center
+            {t('command_center')}
           </h1>
           <p className="text-gray-400 mt-1 text-sm">
-            Live public safety intelligence and automated threat neutralization.
+            {t('command_center_desc')}
           </p>
         </div>
       </div>
@@ -105,28 +107,28 @@ export default function DashboardPage() {
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Scams Blocked"
+          title={t('scams_blocked')}
           value={data.overview.total_scams_blocked?.toLocaleString() || "0"}
           icon={ShieldAlert}
           colorClass="text-emerald-400"
           trend={data.overview.scams_trend}
         />
         <StatCard
-          title="Active Fraud Rings"
+          title={t('active_fraud_rings')}
           value={data.overview.active_fraud_rings?.toString() || "0"}
           icon={Network}
           colorClass="text-purple-400"
           trend={data.overview.fraud_rings_trend}
         />
         <StatCard
-          title="Critical Hotspots"
+          title={t('critical_hotspots')}
           value={data.overview.critical_hotspots?.toString() || "0"}
           icon={MapPin}
           colorClass="text-red-400"
           trend={data.overview.hotspots_trend}
         />
         <StatCard
-          title="Counterfeit Reports"
+          title={t('counterfeit_reports')}
           value={data.overview.counterfeit_detected?.toString() || "0"}
           icon={AlertTriangle}
           colorClass="text-orange-400"
@@ -141,7 +143,7 @@ export default function DashboardPage() {
           <div className="glass-card p-5 border border-gray-700/50">
             <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
               <PhoneOff className="w-4 h-4 text-blue-400" />
-              Scam Attempts vs Blocked (Last 7 Days)
+              {t('scam_attempts_chart')}
             </h3>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">

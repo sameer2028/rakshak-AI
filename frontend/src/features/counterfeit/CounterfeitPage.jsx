@@ -7,6 +7,7 @@ import ReportView from './ReportView';
 import FeatureInspector from './FeatureInspector';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import HistoryTable from './HistoryTable';
+import { useTranslation } from 'react-i18next';
 
 /**
  * CounterfeitPage — main page for Counterfeit Currency Detection module.
@@ -19,6 +20,7 @@ import HistoryTable from './HistoryTable';
  * All API calls use Rakshak-AI's authenticated axios client (JWT Bearer token).
  */
 export default function CounterfeitPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('scanner');
   const [verificationResult, setVerificationResult] = useState(null);
   const [stats, setStats] = useState(null);
@@ -59,9 +61,9 @@ export default function CounterfeitPage() {
   };
 
   const tabs = [
-    { id: 'scanner', label: 'Scanner Console', icon: <Banknote size={15} /> },
-    { id: 'analytics', label: 'Analytics Vault', icon: <BarChart3 size={15} /> },
-    { id: 'history', label: 'Audit History', icon: <History size={15} /> },
+    { id: 'scanner', label: t('scanner_console'), icon: <Banknote size={15} /> },
+    { id: 'analytics', label: t('analytics_vault'), icon: <BarChart3 size={15} /> },
+    { id: 'history', label: t('audit_history'), icon: <History size={15} /> },
   ];
 
   return (
@@ -71,10 +73,10 @@ export default function CounterfeitPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <Banknote className="w-8 h-8 text-cyan-400" />
-            Counterfeit Currency Detection
+            {t('counterfeit_currency_detection')}
           </h1>
           <p className="text-gray-400 mt-2 text-sm">
-            AI-powered multi-stage security feature verification using YOLOv11, EasyOCR, and EfficientNetV2.
+            {t('counterfeit_subtitle')}
           </p>
         </div>
       </div>
@@ -123,14 +125,14 @@ export default function CounterfeitPage() {
                   <div className="p-3 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-xl inline-block mb-4">
                     <Eye size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">Stage 1: Preprocessing & CLAHE</h3>
+                  <h3 className="text-base font-bold text-white mb-2">{t('stage1_title')}</h3>
                   <p className="text-gray-400 text-xs leading-relaxed">
-                    Applies Contrast Limited Adaptive Histogram Equalization (CLAHE) filters and localized thresholding masks to reveal hidden micro-prints, watermarks, and serial engravings.
+                    {t('stage1_desc')}
                   </p>
                 </div>
                 <div className="text-[10px] uppercase tracking-wider font-extrabold text-cyan-400 mt-6 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
-                  Image Optimization Grid Active
+                  {t('stage1_status')}
                 </div>
               </div>
 
@@ -143,14 +145,14 @@ export default function CounterfeitPage() {
                   <div className="p-3 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl inline-block mb-4">
                     <Network size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">Stage 2: YOLOv11 Feature Anchoring</h3>
+                  <h3 className="text-base font-bold text-white mb-2">{t('stage2_title')}</h3>
                   <p className="text-gray-400 text-xs leading-relaxed">
-                    Deploying YOLOv11 convolutional neural networks to localize primary security landmarks: Mahatma Gandhi Watermark, Ashoka Pillar, RBI Seal, and the color-shifting Security Thread.
+                    {t('stage2_desc')}
                   </p>
                 </div>
                 <div className="text-[10px] uppercase tracking-wider font-extrabold text-blue-400 mt-6 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
-                  Neural Anchors Ready
+                  {t('stage2_status')}
                 </div>
               </div>
 
@@ -163,14 +165,14 @@ export default function CounterfeitPage() {
                   <div className="p-3 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl inline-block mb-4">
                     <Cpu size={22} />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">Stage 3: EasyOCR & Signature Diagnostics</h3>
+                  <h3 className="text-base font-bold text-white mb-2">{t('stage3_title')}</h3>
                   <p className="text-gray-400 text-xs leading-relaxed">
-                    Extracts the banknote serial number prefix and governor's signature block, cross-validating the format against standard RBI database structures.
+                    {t('stage3_desc')}
                   </p>
                 </div>
                 <div className="text-[10px] uppercase tracking-wider font-extrabold text-purple-400 mt-6 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse" />
-                  EasyOCR Pipeline Configured
+                  {t('stage3_status')}
                 </div>
               </div>
             </div>
@@ -184,14 +186,14 @@ export default function CounterfeitPage() {
           {statsLoading ? (
             <div className="flex flex-col items-center justify-center py-24 text-gray-500">
               <RefreshCw size={24} className="animate-spin text-emerald-400 mb-2" />
-              <p className="text-sm">Compiling analytics...</p>
+              <p className="text-sm">{t('compiling_analytics')}</p>
             </div>
           ) : stats ? (
             <AnalyticsDashboard stats={stats} />
           ) : (
             <div className="flex flex-col items-center justify-center py-24 text-gray-500">
               <BarChart3 size={32} className="mb-3 opacity-30" />
-              <p className="text-sm">No analytics data available. Run some verifications first.</p>
+              <p className="text-sm">{t('no_analytics_data')}</p>
             </div>
           )}
         </>

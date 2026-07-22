@@ -1,8 +1,10 @@
 import { ShieldAlert, CheckCircle2, AlertTriangle, Shield, CheckCircle, Network } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import RiskMeter from '../../components/common/RiskMeter';
+import { useTranslation } from 'react-i18next';
 
 export default function ScamResult({ result }) {
+  const { t } = useTranslation();
   if (!result) return null;
 
   const { is_scam, scam_type, risk_score, confidence, threat_indicators, recommended_actions, fraud_network_match } = result;
@@ -35,19 +37,19 @@ export default function ScamResult({ result }) {
           <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
             <ThemeIcon className={cn("w-6 h-6", themeClass)} />
             <h3 className="text-xl font-bold text-white tracking-wide">
-              {isSafe ? 'No Scam Detected' : 'SCAM DETECTED'}
+              {isSafe ? t('no_scam_detected') : t('scam_detected')}
             </h3>
           </div>
           
           <div className="mt-2 text-sm text-gray-400">
-            Detected Type:{' '}
+            {t('detected_type')}{' '}
             <span className={cn("font-medium uppercase tracking-wider", themeClass)}>
               {scam_type.replace(/_/g, ' ')}
             </span>
           </div>
 
           <div className="mt-4 flex gap-4 text-xs font-mono text-gray-500 justify-center md:justify-start">
-            <span>Model Confidence: <strong className="text-gray-300">{(confidence * 100).toFixed(1)}%</strong></span>
+            <span>{t('model_confidence')} <strong className="text-gray-300">{(confidence * 100).toFixed(1)}%</strong></span>
           </div>
         </div>
       </div>
@@ -64,7 +66,7 @@ export default function ScamResult({ result }) {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-base font-bold text-red-400 flex items-center gap-2 mb-1">
-                    🚨 FRAUD NETWORK MATCH
+                    {t('fraud_network_match_title')}
                   </h4>
                   <p className="text-sm text-red-200 mb-2">
                     The {fraud_network_match.entity_type === 'phone' ? 'phone number' : fraud_network_match.entity_type === 'upi' ? 'UPI ID' : 'bank account'}{' '}
@@ -90,7 +92,7 @@ export default function ScamResult({ result }) {
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
-              Threat Indicators Found
+              {t('threat_indicators_found')}
             </h4>
             <div className="grid gap-3">
               {threat_indicators?.map((indicator, idx) => (
@@ -107,7 +109,7 @@ export default function ScamResult({ result }) {
                 </div>
               ))}
               {(!threat_indicators || threat_indicators.length === 0) && (
-                <div className="text-gray-500 text-sm italic">No specific indicators extracted.</div>
+                <div className="text-gray-500 text-sm italic">{t('no_specific_indicators')}</div>
               )}
             </div>
           </div>
@@ -116,7 +118,7 @@ export default function ScamResult({ result }) {
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
             <h4 className="text-sm font-semibold text-blue-400 flex items-center gap-2 mb-4">
               <Shield className="w-4 h-4" />
-              Recommended Action Plan
+              {t('recommended_action_plan')}
             </h4>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {recommended_actions?.map((action, idx) => (
@@ -130,11 +132,11 @@ export default function ScamResult({ result }) {
 
           {/* AI Suggested Response */}
           <div className="bg-blue-900/20 border border-blue-500/30 p-5 rounded-xl flex flex-col">
-            <h4 className="text-gray-400 text-sm uppercase tracking-wider mb-4">AI Suggested Response</h4>
+            <h4 className="text-gray-400 text-sm uppercase tracking-wider mb-4">{t('ai_suggested_response')}</h4>
             <div className="bg-blue-900/40 p-4 rounded-lg text-blue-100 flex-1 flex items-center justify-center text-center text-lg italic">
               {risk_score > 70 
-                ? `"I will contact my bank or the local authorities directly. I will not share any information over the phone."` 
-                : `"Thank you for the information, I will verify this and get back to you."`}
+                ? t('response_high_risk') 
+                : t('response_low_risk')}
             </div>
           </div>
         </>
